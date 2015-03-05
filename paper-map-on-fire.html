@@ -10,7 +10,7 @@
 
 <polymer-element name="paper-map-on-fire">
   <template>
-    <style>    
+    <style>
       :host {
         position: absolute;
         width: 100%;
@@ -84,6 +84,10 @@
         bottom: 40px;
         position: absolute;
       }
+      #google_map_search {
+        color: #000;
+      }
+
     </style>
     <firebase-element location="https://dazzling-fire-4274.firebaseio.com/" limittolast="300" data="{{ data }}" keys="{{ keys }}" dataready id="base"></firebase-element>
     <core-drawer-panel transition id="core_drawer_panel" touch-action>

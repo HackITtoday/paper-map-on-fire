@@ -31,11 +31,20 @@
                 <!-- Main Toolbar -->
                 <core-toolbar>
                     <core-icon-button icon="filter-list" core-drawer-toggle></core-icon-button>
-                    <core-field flex="6">
+                    <core-field>
                         <input placeholder="Search" flex>
                     </core-field>
-                    <span flex="4"></span>
-                    <core-icon-button icon="menu"></core-icon-button>
+                    <!-- Ventical DropDown Button -->
+                    <core-menu-button id="menuBtn" noink>
+                        <core-icon-button icon="more-vert" noink></core-icon-button>
+                        <core-dropdown class="dropdown" halign="right">
+                            <core-menu class="menu">
+                                <core-item>Settings</core-item>
+                                <core-item>Help</core-item>
+                                <core-item>Feedback</core-item>
+                            </core-menu>
+                        </core-dropdown>
+                    </core-menu-button>
                 </core-toolbar>
 
                 <!-- Main Content -->

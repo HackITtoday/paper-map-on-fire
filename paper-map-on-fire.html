@@ -83,19 +83,6 @@ Element providing solution to no problem in particular.
             bottom: 20px;
             position: absolute;
         }
-        #google_map_search {
-            left: 100px;
-            top: 12px;
-            position: absolute;
-            width: 60%;
-            height: 30px;
-            background-color: rgb(255, 255, 255);
-            color: #000;
-            font-family: 'Roboto', Helvetica, "Helvetica Neue", Arial, sans-serif;
-            font-size: 25px;
-            padding-left: 10px;
-            padding-top: 5px;
-        }
         #paper_button {
             left: 1320px;
             top: 410px;
@@ -122,7 +109,6 @@ Element providing solution to no problem in particular.
                 </google-map>
                 <core-toolbar id="core_toolbar">
                     <core-icon-button icon="filter" id="core_icon_button1" theme="core-light-theme"></core-icon-button>
-                    <google-map-search id="google_map_search">{{search}}</google-map-search>
                     <core-icon-button icon="filter-list" id="core_icon_button2" theme="core-light-theme"></core-icon-button>
                 </core-toolbar>
                 <paper-fab icon="list" id="paper_fab"></paper-fab>
@@ -133,7 +119,6 @@ Element providing solution to no problem in particular.
     <script>
     Polymer({
         data: null,
-        search: "London",
         keys: null,
         LatLngTolongitude: function(value) {
             return value.split(',')[1];

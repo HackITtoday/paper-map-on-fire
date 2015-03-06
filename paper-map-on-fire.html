@@ -10,17 +10,17 @@
 
         <core-drawer-panel>
 
-            <!-- Drawer -->
+            <!-- Menu Drawer -->
             <core-header-panel drawer mode="seamed">
 
                 <!-- Drawer Toolbar Heading -->
-                <core-toolbar>Menu</core-toolbar>
+                <core-toolbar>Filter</core-toolbar>
 
                 <!-- Drawer Content -->
                 <core-menu ng-selected="string" ted="0">
-                    <core-item label="Menu1"></core-item>
-                    <core-item label="Menu2"></core-item>
-                    <core-item label="Menu3"></core-item>
+                    <core-item label="Filter1"></core-item>
+                    <core-item label="Filter2"></core-item>
+                    <core-item label="Filter2"></core-item>
                 </core-menu>
 
             </core-header-panel>
@@ -30,11 +30,12 @@
 
                 <!-- Main Toolbar -->
                 <core-toolbar>
-                    <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
-                    <core-field>
+                    <core-icon-button icon="filter-list" core-drawer-toggle></core-icon-button>
+                    <core-field flex="6">
                         <input placeholder="Search" flex>
                     </core-field>
-                    <core-icon-button icon="filter-list" id="core_icon_button2" theme="core-light-theme"></core-icon-button>
+                    <span flex="4"></span>
+                    <core-icon-button icon="menu"></core-icon-button>
                 </core-toolbar>
 
                 <!-- Main Content -->
@@ -51,10 +52,11 @@
                 </div>
 
             </core-header-panel>
+
         </core-drawer-panel>
 
     </template>
-    
+
     <script>
     Polymer({
         data: null,

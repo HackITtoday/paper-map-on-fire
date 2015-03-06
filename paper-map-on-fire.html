@@ -1,121 +1,60 @@
-<!--
-    @license
-    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-    Code distributed by Google as part of the polymer project is also
-    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<link rel="import" href="../firebase-element/firebase-element.html">
-<link rel="import" href="../core-drawer-panel/core-drawer-panel.html">
-<link rel="import" href="../google-map/google-map.html">
-<link rel="import" href="../core-icon-button/core-icon-button.html">
-<link rel="import" href="../core-toolbar/core-toolbar.html">
-<link rel="import" href="../google-map/google-map-search.html">
-<link rel="import" href="../core-icons/core-icons.html">
-<link rel="import" href="../core-icons/av-icons.html">
-<link rel="import" href="../paper-fab/paper-fab.html">
-<link rel="import" href="../core-icons/maps-icons.html">
-<!--
-Element providing solution to no problem in particular.
+<link rel="import" href="elements.html">
 
-##### Example
-
-    <seed-element></seed-element>
-
-@element seed-element
-@blurb Element providing solution to no problem in particular.
-@status alpha
-@homepage http://polymerlabs.github.io/seed-element
--->
 <polymer-element name="paper-map-on-fire">
     <template>
-        <style>
-        :host {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-        }
-        #core_drawer_panel {
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            bottom: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-        }
-        #section {
-            box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
-            background-color: rgb(250, 250, 250);
-        }
-        #section1 {
-            height: 100%;
-            box-sizing: border-box;
-            background-color: rgb(221, 221, 221);
-        }
-        #core_toolbar {
-            right: 0px;
-            left: -6px;
-            color: rgb(255, 255, 255);
-            fill: rgb(255, 255, 255);
-            top: 0px;
-            position: absolute;
-            background-color: rgb(79, 125, 201);
-        }
-        #core_icon_button1 {
-            left: 768px;
-            top: 10px;
-            position: absolute;
-        }
-        #google_map {
-            width: 100%;
-            height: 100%;
-            display: block;
-            left: 0px;
-            top: 0px;
-            position: absolute;
-        }
-        #core_icon_button2 {
-            right: 20px;
-            bottom: 20px;
-            position: absolute;
-        }
-        #paper_button {
-            left: 1320px;
-            top: 410px;
-        }
-        #paper_fab {
-            right: 40px;
-            bottom: 110px;
-            position: absolute;
-        }
-        #paper_fab1 {
-            right: 40px;
-            bottom: 40px;
-            position: absolute;
-        }
-        </style>
+        <link rel="stylesheet" href="paper-map-on-fire.css">
+
+        <!-- Firebase Element -->
         <firebase-element location="https://dazzling-fire-4274.firebaseio.com/" limittolast="100" data="{{ data }}" keys="{{ keys }}" dataready id="base"></firebase-element>
-        <core-drawer-panel transition id="core_drawer_panel" touch-action>
-            <section id="section" drawer></section>
-            <section id="section1" main>
-                <google-map latitude="51.47400332565435" longitude="-0.12501141796873005" id="google_map">
-                    <template repeat="{{x in keys}}">
-                        <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
-                    </template>
-                </google-map>
-                <core-toolbar id="core_toolbar">
-                    <core-icon-button icon="filter" id="core_icon_button1" theme="core-light-theme"></core-icon-button>
+
+
+        <core-drawer-panel>
+
+            <!-- Drawer -->
+            <core-header-panel drawer mode="seamed">
+
+                <!-- Drawer Toolbar Heading -->
+                <core-toolbar>Menu</core-toolbar>
+
+                <!-- Drawer Content -->
+                <core-menu ng-selected="string" ted="0">
+                    <core-item label="Menu1"></core-item>
+                    <core-item label="Menu2"></core-item>
+                    <core-item label="Menu3"></core-item>
+                </core-menu>
+
+            </core-header-panel>
+
+            <!-- Main -->
+            <core-header-panel main mode="seamed">
+
+                <!-- Main Toolbar -->
+                <core-toolbar>
+                    <paper-icon-button icon="menu" core-drawer-toggle></paper-icon-button>
+                    <core-field>
+                        <input placeholder="Search" flex>
+                    </core-field>
                     <core-icon-button icon="filter-list" id="core_icon_button2" theme="core-light-theme"></core-icon-button>
                 </core-toolbar>
-                <paper-fab icon="list" id="paper_fab"></paper-fab>
-                <paper-fab icon="maps:my-location" id="paper_fab1"></paper-fab>
-            </section>
+
+                <!-- Main Content -->
+                <div class="hero-unit">
+                    <google-map latitude="51.47400332565435" longitude="-0.12501141796873005" id="google_map">
+                        <template repeat="{{x in keys}}">
+                            <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
+                        </template>
+                    </google-map>
+
+                    <!-- Fab Buttons -->
+                    <paper-fab icon="list" id="paper_fab"></paper-fab>
+                    <paper-fab icon="maps:my-location" id="paper_fab1"></paper-fab>
+                </div>
+
+            </core-header-panel>
         </core-drawer-panel>
+
     </template>
+    
     <script>
     Polymer({
         data: null,

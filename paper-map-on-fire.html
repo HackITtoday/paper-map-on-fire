@@ -14,13 +14,13 @@
             <core-header-panel drawer mode="seamed">
 
                 <!-- Drawer Toolbar Heading -->
-                <core-toolbar>Filter</core-toolbar>
+                <core-toolbar>Menu</core-toolbar>
 
                 <!-- Drawer Content -->
-                <core-menu ng-selected="string" ted="0">
-                    <core-item label="Filter1"></core-item>
-                    <core-item label="Filter2"></core-item>
-                    <core-item label="Filter2"></core-item>
+                <core-menu>
+                    <core-item label="Menu1"></core-item>
+                    <core-item label="Menu2"></core-item>
+                    <core-item label="Menu2"></core-item>
                 </core-menu>
 
             </core-header-panel>
@@ -30,21 +30,12 @@
 
                 <!-- Main Toolbar -->
                 <core-toolbar>
-                    <core-icon-button icon="filter-list" core-drawer-toggle></core-icon-button>
+                    <core-icon-button icon="menu" core-drawer-toggle></core-icon-button>
                     <core-field>
                         <input placeholder="Search" flex>
                     </core-field>
-                    <!-- Ventical DropDown Button -->
-                    <core-menu-button id="menuBtn" noink>
-                        <core-icon-button icon="more-vert" noink></core-icon-button>
-                        <core-dropdown class="dropdown" halign="right">
-                            <core-menu class="menu">
-                                <core-item>Settings</core-item>
-                                <core-item>Help</core-item>
-                                <core-item>Feedback</core-item>
-                            </core-menu>
-                        </core-dropdown>
-                    </core-menu-button>
+                    <!-- Filter Button -->
+                    <core-icon-button icon="filter-list"></core-icon-button>
                 </core-toolbar>
 
                 <!-- Main Content -->

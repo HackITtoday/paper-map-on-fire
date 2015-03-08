@@ -45,4 +45,9 @@
             bottom: 40px;
             position: absolute;
         }
+        #paper_fab2 {
+            right: 40px;
+            bottom: 180px;
+            position: absolute;
+        }
         </style>

@@ -1,0 +1,37 @@
+<link rel="import" href="elements/elements.html">
+
+<polymer-element name="paper-map-on-fire">
+    <template>
+        <link rel="stylesheet" href="paper-map-on-fire.css">
+
+        <!-- Firebase Element -->
+        <firebase-element location="https://dazzling-fire-4274.firebaseio.com/" limittolast="100" data="{{ data }}" keys="{{ keys }}" dataready id="base"></firebase-element>
+
+                <!-- Main Content -->
+                <div class="hero-unit">
+                    <google-map latitude="51.47400332565435" longitude="-0.12501141796873005" id="google_map">
+                        <template repeat="{{x in keys}}">
+                            <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
+                        </template>
+                    </google-map>
+
+                    <!-- Fab Button for My Location -->
+                    <paper-fab icon="maps:my-location" id="paper_fab1"></paper-fab>
+                </div>
+
+    </template>
+
+    <script>
+    Polymer({
+        data: null,
+        keys: null,
+        LatLngTolongitude: function(value) {
+            return value.split(',')[1];
+        },
+        LatLngTolatitude: function(value) {
+            return value.split(',')[0];
+        }
+    });
+    </script>
+
+</polymer-element>

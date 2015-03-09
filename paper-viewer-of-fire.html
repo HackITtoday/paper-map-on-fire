@@ -1,8 +1,8 @@
 <link rel="import" href="elements/elements.html">
 
-<polymer-element name="paper-map-on-fire">
+<polymer-element name="paper-viewer-of-fire">
     <template>
-        <link rel="stylesheet" href="paper-map-on-fire.css">
+        <link rel="stylesheet" href="paper-viewer-of-fire.css">
 
         <!-- Firebase Element -->
         <firebase-element location="https://dazzling-fire-4274.firebaseio.com/" limittolast="100" data="{{ data }}" keys="{{ keys }}" dataready id="base"></firebase-element>
@@ -37,18 +37,7 @@
                 </core-toolbar>
 
                 <!-- Main Content -->
-                <div class="hero-unit">
-                    <google-map latitude="51.47400332565435" longitude="-0.12501141796873005" id="google_map">
-                        <template repeat="{{x in keys}}">
-                            <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
-                        </template>
-                    </google-map>
-
-                    <!-- Fab Buttons -->
-                    <paper-fab icon="list" id="paper_fab"></paper-fab>
-                    <paper-fab icon="maps:my-location" id="paper_fab1"></paper-fab>
-                    <paper-fab icon="filter-list" id="paper_fab2"></paper-fab>
-                </div>
+                <paper-map data={{data}}></paper-map>
 
             </core-header-panel>
 
@@ -58,14 +47,7 @@
 
     <script>
     Polymer({
-        data: null,
-        keys: null,
-        LatLngTolongitude: function(value) {
-            return value.split(',')[1];
-        },
-        LatLngTolatitude: function(value) {
-            return value.split(',')[0];
-        }
+
     });
     </script>
 

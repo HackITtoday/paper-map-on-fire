@@ -62,7 +62,8 @@
     "core-menu": "Polymer/core-menu#~0.5.5",
     "core-icon-button": "Polymer/core-icon-button#~0.5.5",
     "core-menu-button": "Polymer/core-menu-button#~0.5.5",
-    "core-dropdown": "Polymer/core-dropdown#~0.5.5"
+    "core-dropdown": "Polymer/core-dropdown#~0.5.5",
+    "geofire": "~3.2.2"
   },
   "devDependencies": {
     "web-component-tester": "*"

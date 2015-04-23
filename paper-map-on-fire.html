@@ -1,26 +1,38 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../app-globals/app-globals.html">
+<link rel="import" href="../paper-card/paper-card.html">
 
-<polymer-element name="paper-map-on-fire" attributes="url centering">
+<polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url centering">
     <template>
         <link rel="stylesheet" href="paper-map-on-fire.css">
 
         <!-- Firebase Element -->
-        <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="base"></firebase-element>
-        
-        <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
-          <template repeat="{{x in keys | geofilter(data) }}">
-              <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
-          </template>
-        </google-map>
+        <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
+        <app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}"></app-globals> 
+        <div style="height:100%">
+          <div style="float: left;height: 100%;"> 
+            <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
+              <template repeat="{{x in $.globals.values.pinsinmap}}">
+                <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
+              </template>
+            </google-map>
+          </div> 
+          <div style="clear: both;"> 
+            <template repeat="{{x in $.globals.values.pinsinmap}}">
+              <paper-card flex heading="{{data[x].value}}"><h3> :) <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
+            </template>
+          </div>
+        </div>
     </template>
 
     <script>
-     //
-     //globles
-     //
+
+    //
+    //globals
+    //
     var map;
+    var pinsinmap;
     var area = {
       reset: function() {
         area.bounds = new google.maps.LatLngBounds();
@@ -49,6 +61,11 @@
       area.bounds = map.getBounds();
       google.maps.event.addListener(map, 'idle', function() {
         area.bounds = map.getBounds();
+        var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
+        var data = app.data;
+        var keys = app.keys;
+        // app.pinsinmap = 
+        app.geofilter(keys,data);
       });
     };
     Polymer({
@@ -68,10 +85,20 @@
           if (data !== null && value !== null) {
             setmap();
             var check = area.contains_str_latlng;
+            var output=[];
             value.forEach(function(key) {
-              check(data[key].LatLng);
+              if (check(data[key].LatLng)) {
+                output.push(key);
+              }
             });
+            var d = document.querySelectorAll("html /deep/ #globals");
+            this.$.globals.values.pinsinmap = output;
+            return output;
           }
+        },
+        ready: function() {
+          console.log('Pins: ' + this.$.globals.values.pinsinmap);
+          pinsinmap = this.$.globals.values.pinsinmap;
         }
     });
     </script>

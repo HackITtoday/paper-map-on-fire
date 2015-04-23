@@ -28,6 +28,8 @@
       contains_str_latlng: function(LatLng) {
         if (LatLng !== undefined) {
           return this.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
+        } else {
+          return false;
         }
       },
       contains: function(lat, lng) {
@@ -60,18 +62,12 @@
         },
         geofilter: function(value,data) {
           if (data !== null && value !== null) {
-            this.syncMap();
-            var check = this.area.contains_str_latlng;
+            setmap();
+            var check = area.contains_str_latlng;
             value.forEach(function(key) {
               check(data[key].LatLng);
             });
           }
-        },
-        syncMap: function() {
-          google.maps.event.addListener(map, 'bounds_changed', function() {
-                     alert(map.getBounds());
-          });
-          //this.area.bounds = new google.maps.LatLngBounds( this.$.google_map.getBounds() );
         }
     });
     </script>

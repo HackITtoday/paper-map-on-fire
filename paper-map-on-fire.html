@@ -42,10 +42,7 @@
  
     var setmap = function() {
       var d = document.querySelectorAll("html /deep/ #google_map");
-      map = new google.maps.Map(d[0]);
-      google.maps.event.addListener(map, 'bounds_changed', function() {
-        alert(map.getBounds());
-      });
+      alert(d[0].map.getBounds());
     };
     Polymer({
         data: null,

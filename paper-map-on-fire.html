@@ -19,6 +19,34 @@
      //
      //globles
      //
+    var map;
+    var area = {
+      reset: function() {
+        this.bounds = new google.maps.LatLngBounds();
+      },
+      bounds: {},
+      contains_str_latlng: function(LatLng) {
+        if (LatLng !== undefined) {
+          return this.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
+        }
+      },
+      contains: function(lat, lng) {
+        var point = new google.maps.LatLng(lat, lng);
+        return this.bounds.contains(point);
+      },
+      extend: function(lat, lng) {
+        var point = new google.maps.LatLng(lat, lng);
+        this.bounds.extend(point);
+      }
+    };
+ 
+    var setmap = function() {
+      var d = document.querySelectorAll("html /deep/ #google_map");
+      map = new google.maps.Map(d[0]);
+      google.maps.event.addListener(map, 'bounds_changed', function() {
+        alert(map.getBounds());
+      });
+    };
     Polymer({
         data: null,
         keys: null,
@@ -28,30 +56,8 @@
         LatLngTolatitude: function(value) {
             return +value.split(',')[0];
         },
-        aera: {},
         ready: function() {
-          google.maps.event.addListener(this.$.google_map, 'bounds_changed', function() {
-                     alert(this.$.google_map.getBounds());
-          });
-          this.area = {
-            reset: function() {
-              this.bounds = new google.maps.LatLngBounds();
-            },
-            bounds: {},
-            contains_str_latlng: function(LatLng) {
-              if (LatLng !== undefined) {
-                return this.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
-              }
-            },
-            contains: function(lat, lng) {
-              var point = new google.maps.LatLng(lat, lng);
-              return this.bounds.contains(point);
-            },
-            extend: function(lat, lng) {
-              var point = new google.maps.LatLng(lat, lng);
-              this.bounds.extend(point);
-            }
-          };
+          setTimeout(function() { setmap() },2000)
         },
         googleMapReady: function(attr1,attr2) {
         },
@@ -65,7 +71,7 @@
           }
         },
         syncMap: function() {
-          google.maps.event.addListener(this.$.google_map, 'bounds_changed', function() {
+          google.maps.event.addListener(map, 'bounds_changed', function() {
                      alert(map.getBounds());
           });
           //this.area.bounds = new google.maps.LatLngBounds( this.$.google_map.getBounds() );

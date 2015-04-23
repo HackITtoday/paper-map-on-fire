@@ -22,19 +22,19 @@
     var map;
     var area = {
       reset: function() {
-        this.bounds = new google.maps.LatLngBounds();
+        area.bounds = new google.maps.LatLngBounds();
       },
       bounds: {},
       contains_str_latlng: function(LatLng) {
         if (LatLng !== undefined) {
-          return this.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
+          return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
         } else {
           return false;
         }
       },
       contains: function(lat, lng) {
         var point = new google.maps.LatLng(lat, lng);
-        return this.bounds.contains(point);
+        return area.bounds.contains(point);
       },
       extend: function(lat, lng) {
         var point = new google.maps.LatLng(lat, lng);
@@ -44,21 +44,24 @@
  
     var setmap = function() {
       var d = document.querySelectorAll("html /deep/ #google_map");
-      area.bounds = d[0].map.getBounds();
+      map = d[0].map;
+      area.bounds = map.getBounds();
+      google.maps.event.addListener(map, 'idle', function() {
+        area.bounds = map.getBounds();
+      });
     };
     Polymer({
         data: null,
         keys: null,
         LatLngTolongitude: function(value) {
+          if (value !== undefined) {
             return +value.split(',')[1];
+          }
         },
         LatLngTolatitude: function(value) {
+          if (value !== undefined) {
             return +value.split(',')[0];
-        },
-        ready: function() {
-          setTimeout(function() { setmap() },2000)
-        },
-        googleMapReady: function(attr1,attr2) {
+          }
         },
         geofilter: function(value,data) {
           if (data !== null && value !== null) {

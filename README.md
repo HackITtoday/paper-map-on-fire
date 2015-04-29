@@ -1,16 +1,28 @@
 paper-map-on-fire
 =================
+get the code (fork and update uri)
 ```sh
 mkdir components
 cd components
 git clone git@github.com:HackITtoday/paper-map-on-fire.git
 cd paper*
 bower install
-
+```
+Bower will  ask you stuff go for 5^
+serve with python
+```sh
 cd ..
 python -m SimpleHTTPServer
 
 ```
+or node 
+```sh
+cd ..
+sudo npm install http-server -g
+http-server . -p 8000
+```
+
+
 goto `http://localhost:8000/paper-map-on-fire/demo.html`
 
 in a editer open components/paper-map-on-fire/paper-map-on-fire.html

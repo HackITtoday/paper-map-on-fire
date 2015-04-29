@@ -10,8 +10,11 @@
         <!-- Firebase Element -->
         <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
         <app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}"></app-globals> 
-        <div style="height:100%">
-          <div style="float: left;height: 100%;"> 
+        <div>
+          filters
+        </div>
+        <div style="height:50%">
+          <div style="height: 100%;"> 
             <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
               <template repeat="{{x in $.globals.values.pinsinmap}}">
                 <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
@@ -58,6 +61,7 @@
     var setmap = function() {
       var d = document.querySelectorAll("html /deep/ #google_map");
       map = d[0].map;
+      //map.panControl = false;
       area.bounds = map.getBounds();
       google.maps.event.addListener(map, 'idle', function() {
         area.bounds = map.getBounds();
@@ -68,6 +72,51 @@
         app.geofilter(keys,data);
       });
     };
+
+ function CenterControl(controlDiv, map) {
+
+  // Set CSS for the control border
+  var controlUI = document.createElement('div');
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  controlUI.title = 'Click to recenter the map';
+  controlDiv.appendChild(controlUI);
+
+  // Set CSS for the control interior
+  var controlText = document.createElement('div');
+  controlText.style.color = 'rgb(25,25,25)';
+  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlText.style.fontSize = '16px';
+  controlText.style.lineHeight = '38px';
+  controlText.style.paddingLeft = '5px';
+  controlText.style.paddingRight = '5px';
+  controlText.innerHTML = 'List View';
+  controlUI.appendChild(controlText);
+
+  // Setup the click event listeners: simply set the map to
+  // Chicago
+  google.maps.event.addDomListener(controlUI, 'click', function() {
+    map.setCenter(chicago)
+  });
+
+}
+
+function initialize() {
+  // Create the DIV to hold the control and
+  // call the CenterControl() constructor passing
+  // in this DIV.
+  var centerControlDiv = document.createElement('div');
+  var centerControl = new CenterControl(centerControlDiv, map);
+
+  centerControlDiv.index = 1;
+  //map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+}
+
     Polymer({
         data: null,
         keys: null,
@@ -84,6 +133,7 @@
         geofilter: function(value,data) {
           if (data !== null && value !== null) {
             setmap();
+            //initialize();
             var check = area.contains_str_latlng;
             var output=[];
             value.forEach(function(key) {

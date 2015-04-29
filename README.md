@@ -18,8 +18,8 @@ python -m SimpleHTTPServer
 or node 
 ```sh
 cd ..
-sudo npm install http-server -g
-http-server . -p 8000
+sudo npm install watch-http-server -g
+watch-http-server . -p 8000
 ```
 
 

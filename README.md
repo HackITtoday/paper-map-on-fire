@@ -1,6 +1,12 @@
-seed-element
-============
-
+paper-map-on-fire
+=================
+```
+mkdir components
+cd components
+git clone git@github.com:HackITtoday/paper-map-on-fire.git
+cd paper*
+bower install
+```
 See the [component page](http://polymerlabs.github.io/seed-element) for more information.
 
 ## Getting Started

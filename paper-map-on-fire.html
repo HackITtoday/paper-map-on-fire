@@ -78,7 +78,38 @@
         app.geofilter(keys,data);
       });
     };
-
+function firstType (value,data) {
+  var isFirst = false;
+  for(var index in data) { 
+    var attr = data[index].type; 
+    if (data[value].type === attr) {
+      if (isFirst) {
+        return false;
+      } else {
+        isFirst = true;
+      }
+      if (index === value) {
+        return isFirst;
+      }
+    }
+  }
+  return true;
+}  
+function ofType (value,data,type) {
+  if (data[value].type !== type) {
+    return false;
+  } else {
+    return true;
+  }
+}
+function hasOwnProperty(obj, prop) {
+  if (obj === null) {
+    return false;
+  }
+  var proto = obj.__proto__ || obj.constructor.prototype;
+  return (prop in obj) &&
+  (!(prop in proto) || proto[prop] !== obj[prop]);
+}
  function CenterControl(controlDiv, map) {
 
   // Set CSS for the control border

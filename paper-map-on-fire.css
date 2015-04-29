@@ -22,7 +22,19 @@
             height: 50%;
             display: block;
             left: 0;
+            top:0;
             position: absolute;
+        }
+        #cards {
+
+            top:50%;
+            left: 0;
+            position: absolute;
+            width: 100%;
+            height: 50%;
+        }
+        paper-button {
+          background: #fff;
         }
         #core_icon_button2 {
             right: 20px;

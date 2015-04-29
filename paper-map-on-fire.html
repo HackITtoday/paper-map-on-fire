@@ -26,7 +26,7 @@
     </template>
     -->
     <template repeat="{{x in $.globals.values.pinsinmap | justFacilities(data)}}">
-    <paper-button on-tap="{{setCardFilter}}">{{ x.name }} <mini-badge>{{ x.num }}</mini-badge></paper-button>
+    <paper-button raised on-tap="{{setCardFilter}}">{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
     </template>
   </div>
   <div id="cards"> 

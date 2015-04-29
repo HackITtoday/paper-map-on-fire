@@ -14,9 +14,9 @@
 <div>
   <div id="map_space"> 
     <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
-    <template repeat="{{x in $.globals.values.pinsinmap}}">
-    <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
-    </template>
+      <template repeat="{{x in $.globals.values.pinsinmap}}">
+        <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
+      </template>
     </google-map>
   </div> 
   <div id="filters">
@@ -25,8 +25,8 @@
       <paper-button on-tap="{{setCardFilter}}">{{data[key].type}}</paper-button>
     </template>
     -->
-    <template repeat="{{x in $.globals.values.pinsinmap | justFacilities(data)}}">
-    <paper-button raised on-tap="{{setCardFilter}}">{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
+    <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
+      <paper-button raised on-tap="{{setCardFilter('facilities')}}">{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
     </template>
   </div>
   <div id="cards"> 
@@ -45,27 +45,27 @@
   var map;
   var pinsinmap;
   var area = {
-    reset: function() {
+    reset: function() { console.log('reset');
       area.bounds = new google.maps.LatLngBounds();
     },
     bounds: {},
-    contains_str_latlng: function(LatLng) {
+    contains_str_latlng: function(LatLng) { console.log('contains_str_latlng');
       if (LatLng !== undefined) {
         return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
         } else {
         return false;
       }
     },
-    contains: function(lat, lng) {
+    contains: function(lat, lng) { console.log('contains');
       var point = new google.maps.LatLng(lat, lng);
       return area.bounds.contains(point);
     },
-    extend: function(lat, lng) {
+    extend: function(lat, lng) { console.log('extend');
       var point = new google.maps.LatLng(lat, lng);
       this.bounds.extend(point);
     }
   };
-
+  var initialize = true;
   var setmap = function() {
     var d = document.querySelectorAll("html /deep/ #google_map");
     map = d[0].map;
@@ -79,14 +79,15 @@
       // app.pinsinmap = 
       app.geofilter(keys,data);
     });
+    initialize = false;
   };
 
-  function firstOfArray (value,data,theArray) {
-    var isFirst = [];
+  function getArray(value,data,theArray) {
+    var is = [];
     if (hasOwnProperty(data[value],theArray)) {
-      var isFirst = data[value][theArray];
+      is = data[value][theArray];
     }
-    return isFirst;
+    return is;
   }  
   function ofCat (value, data, cat) {
     if (data[value]["cat"] !== cat) {
@@ -131,19 +132,19 @@
   Polymer({
     data: null,
     keys: null,
-    LatLngTolongitude: function(value) {
+    LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
         return +value.split(',')[1];
       }
     },
-    LatLngTolatitude: function(value) {
+    LatLngTolatitude: function(value) { console.log('LatLngTolatitude');
       if (value !== undefined) {
         return +value.split(',')[0];
       }
     },
-    geofilter: function(value,data) {
+    geofilter: function(value,data) { console.log('geofilter');
       if (data !== null && value !== null) {
-        setmap();
+        if (initialize) { setmap() };
         //initialize();
         var check = area.contains_str_latlng;
         var output=[];
@@ -157,14 +158,12 @@
         return output;
       }
     },
-    justFacilities: function(value,data){
-      console.log('justFacilities');
+    justProperties: function(value,data,properties){ console.log('justProperties');
       var output = [];
       var output_num = [];
       if (value !== undefined && value !== null ) {
         value.forEach(function(entry) {
-          firstOfArray(entry, data,"facilities").forEach(function(entryA) {
-            debugger;
+          getArray(entry, data, properties).forEach(function(entryA) {
             if (output.indexOf(entryA) === -1){
               output.push(entryA); 
               output_num.push( 1 );
@@ -180,20 +179,6 @@
       }
       return result;
     },
-    justCats: function(value,data){
-      console.log('justCats');
-      var output = [];
-      if (value !== undefined && value !== null ) {
-        value.forEach(function(entry) {
-          firstOfArray(entry, data,"cat").forEach(function(entryA) {
-            if (output.indexOf(entryA) === -1){
-              output.push(entryA); 
-            }
-          });
-        });
-      }
-      return output;
-    },
     justCardsOfCats: function(value,data,type){ // needs work
       console.log('justCardsOfCats');
       if (type === 'All') {
@@ -208,7 +193,7 @@
         return output;
       }
     },
-    justTypes: function(value,data){
+    justTypes: function(value,data){ console.log('justTypes');
       console.log('justTypes');
       var output = [];
       if (value !== undefined && value !== null ) {
@@ -220,7 +205,7 @@
       }
       return output;
     },
-    justCardsOfType: function(value,data,type){
+    justCardsOfType: function(value,data,type){ console.log('justCardsOfType');
       console.log('justCardsOfType');
       if (type === 'All') {
         return value;
@@ -234,7 +219,7 @@
         return output;
       }
     },
-    ready: function() {
+    ready: function() { console.log('ready');
       console.log('Pins: ' + this.$.globals.values.pinsinmap);
       pinsinmap = this.$.globals.values.pinsinmap;
     }

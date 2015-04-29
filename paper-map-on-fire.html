@@ -25,8 +25,8 @@
       <paper-button on-tap="{{setCardFilter}}">{{data[key].type}}</paper-button>
     </template>
     -->
-    <template repeat="{{key in keys | justCats(data)}}">
-      <paper-button on-tap="{{setCardFilter}}">{{data[key].type}} <mini-badge>60</mini-badge></paper-button>
+    <template repeat="{{x in $.globals.values.pinsinmap | justFacilities(data)}}">
+    <paper-button on-tap="{{setCardFilter}}">{{ x.name }} <mini-badge>{{ x.num }}</mini-badge></paper-button>
     </template>
   </div>
   <div id="cards"> 
@@ -80,27 +80,18 @@
       app.geofilter(keys,data);
     });
   };
-  function firstCat (value,data) {
-    var isFirst = false;
-    for(var index in data) { 
-      var attr = data[index].type; 
-      if (data[value].type === attr) {
-        if (isFirst) {
-          return false;
-          } else {
-          isFirst = true;
-        }
-        if (index === value) {
-          return isFirst;
-        }
-      }
+
+  function firstOfArray (value,data,theArray) {
+    var isFirst = [];
+    if (hasOwnProperty(data[value],theArray)) {
+      var isFirst = data[value][theArray];
     }
-    return true;
+    return isFirst;
   }  
-  function ofCat (value,data,cat) {
-    if (data[value].type !== type) {
+  function ofCat (value, data, cat) {
+    if (data[value]["cat"] !== cat) {
       return false;
-      } else {
+    } else {
       return true;
     }
   }
@@ -124,7 +115,7 @@
   function ofType (value,data,type) {
     if (data[value].type !== type) {
       return false;
-      } else {
+    } else {
       return true;
     }
   }
@@ -166,23 +157,48 @@
         return output;
       }
     },
+    justFacilities: function(value,data){
+      console.log('justFacilities');
+      var output = [];
+      var output_num = [];
+      if (value !== undefined && value !== null ) {
+        value.forEach(function(entry) {
+          firstOfArray(entry, data,"facilities").forEach(function(entryA) {
+            debugger;
+            if (output.indexOf(entryA) === -1){
+              output.push(entryA); 
+              output_num.push( 1 );
+            } else {
+              output_num[output.indexOf(entryA)]++;
+            }
+          });
+        });
+      }
+      var result = [];
+      for (var i = 0, l = output.length; i < l; i++) {
+        result[i] = {name:output[i],num:output_num[i]};
+      }
+      return result;
+    },
     justCats: function(value,data){
       console.log('justCats');
       var output = [];
       if (value !== undefined && value !== null ) {
         value.forEach(function(entry) {
-          if (firstCat(entry,data)) {
-            output.push(entry); 
-          }
+          firstOfArray(entry, data,"cat").forEach(function(entryA) {
+            if (output.indexOf(entryA) === -1){
+              output.push(entryA); 
+            }
+          });
         });
       }
       return output;
     },
-    justCardsOfCats: function(value,data,type){
+    justCardsOfCats: function(value,data,type){ // needs work
       console.log('justCardsOfCats');
       if (type === 'All') {
         return value;
-        } else {
+      } else {
         var output = [];
         value.forEach(function(entry) {
           if (ofCat(entry,data,type)) {

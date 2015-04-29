@@ -27,7 +27,8 @@
   "dependencies": {
     "firebase-element": "Polymer/firebase-element#^0.5.0",
     "app-globals": "marcus7777/app-globals#master",
-    "google-map": "GoogleWebComponents/google-map#master"
+    "google-map": "GoogleWebComponents/google-map#master",
+    "paper-card": "Polymer/paper-card"
   },
   "devDependencies": {
     "web-component-tester": "*"

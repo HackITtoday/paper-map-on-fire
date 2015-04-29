@@ -5,188 +5,223 @@
 <link rel="import" href="../paper-button/paper-button.html">
 
 <polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url centering">
-    <template>
-        <link rel="stylesheet" href="paper-map-on-fire.css">
+<template>
+<link rel="stylesheet" href="paper-map-on-fire.css">
 
-        <!-- Firebase Element -->
-        <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
-        <app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}"></app-globals> 
-        <div>
-          <div id="map_space"> 
-            <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
-              <template repeat="{{x in $.globals.values.pinsinmap}}">
-                <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
-              </template>
-            </google-map>
-          </div> 
-          <div id="filters">
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-            <paper-button raised>Indoor Pool <mini-badge>60</mini-badge></paper-button>
-          </div>
-          <div id="cards"> 
-            <template repeat="{{x in $.globals.values.pinsinmap}}">
-              <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
-            </template>
-          </div>
-        </div>
+<!-- Firebase Element -->
+<firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
+<app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}"></app-globals> 
+<div>
+  <div id="map_space"> 
+    <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
+    <template repeat="{{x in $.globals.values.pinsinmap}}">
+    <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
     </template>
+    </google-map>
+  </div> 
+  <div id="filters">
+    <!-- 
+    <template repeat="{{key in keys | justTypes(data)}}">
+      <paper-button on-tap="{{setCardFilter}}">{{data[key].type}}</paper-button>
+    </template>
+    -->
+    <template repeat="{{key in keys | justCats(data)}}">
+      <paper-button on-tap="{{setCardFilter}}">{{data[key].type}} <mini-badge>60</mini-badge></paper-button>
+    </template>
+  </div>
+  <div id="cards"> 
+    <template repeat="{{x in $.globals.values.pinsinmap}}">
+    <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
+    </template>
+  </div>
+</div>
+</template>
 
-    <script>
+<script>
 
-    //
-    //globals
-    //
-    var map;
-    var pinsinmap;
-    var area = {
-      reset: function() {
-        area.bounds = new google.maps.LatLngBounds();
-      },
-      bounds: {},
-      contains_str_latlng: function(LatLng) {
-        if (LatLng !== undefined) {
-          return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
+  //
+  //globals
+  //
+  var map;
+  var pinsinmap;
+  var area = {
+    reset: function() {
+      area.bounds = new google.maps.LatLngBounds();
+    },
+    bounds: {},
+    contains_str_latlng: function(LatLng) {
+      if (LatLng !== undefined) {
+        return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
         } else {
-          return false;
-        }
-      },
-      contains: function(lat, lng) {
-        var point = new google.maps.LatLng(lat, lng);
-        return area.bounds.contains(point);
-      },
-      extend: function(lat, lng) {
-        var point = new google.maps.LatLng(lat, lng);
-        this.bounds.extend(point);
-      }
-    };
- 
-    var setmap = function() {
-      var d = document.querySelectorAll("html /deep/ #google_map");
-      map = d[0].map;
-      //map.panControl = false;
-      area.bounds = map.getBounds();
-      google.maps.event.addListener(map, 'idle', function() {
-        area.bounds = map.getBounds();
-        var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
-        var data = app.data;
-        var keys = app.keys;
-        // app.pinsinmap = 
-        app.geofilter(keys,data);
-      });
-    };
-function firstType (value,data) {
-  var isFirst = false;
-  for(var index in data) { 
-    var attr = data[index].type; 
-    if (data[value].type === attr) {
-      if (isFirst) {
         return false;
-      } else {
-        isFirst = true;
       }
-      if (index === value) {
-        return isFirst;
+    },
+    contains: function(lat, lng) {
+      var point = new google.maps.LatLng(lat, lng);
+      return area.bounds.contains(point);
+    },
+    extend: function(lat, lng) {
+      var point = new google.maps.LatLng(lat, lng);
+      this.bounds.extend(point);
+    }
+  };
+
+  var setmap = function() {
+    var d = document.querySelectorAll("html /deep/ #google_map");
+    map = d[0].map;
+    //map.panControl = false;
+    area.bounds = map.getBounds();
+    google.maps.event.addListener(map, 'idle', function() {
+      area.bounds = map.getBounds();
+      var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
+      var data = app.data;
+      var keys = app.keys;
+      // app.pinsinmap = 
+      app.geofilter(keys,data);
+    });
+  };
+  function firstCat (value,data) {
+    var isFirst = false;
+    for(var index in data) { 
+      var attr = data[index].type; 
+      if (data[value].type === attr) {
+        if (isFirst) {
+          return false;
+          } else {
+          isFirst = true;
+        }
+        if (index === value) {
+          return isFirst;
+        }
       }
     }
-  }
-  return true;
-}  
-function ofType (value,data,type) {
-  if (data[value].type !== type) {
-    return false;
-  } else {
     return true;
+  }  
+  function ofCat (value,data,cat) {
+    if (data[value].type !== type) {
+      return false;
+      } else {
+      return true;
+    }
   }
-}
-function hasOwnProperty(obj, prop) {
-  if (obj === null) {
-    return false;
-  }
-  var proto = obj.__proto__ || obj.constructor.prototype;
-  return (prop in obj) &&
-  (!(prop in proto) || proto[prop] !== obj[prop]);
-}
- function CenterControl(controlDiv, map) {
-
-  // Set CSS for the control border
-  var controlUI = document.createElement('div');
-  controlUI.style.backgroundColor = '#fff';
-  controlUI.style.border = '2px solid #fff';
-  controlUI.style.borderRadius = '3px';
-  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
-  controlUI.style.cursor = 'pointer';
-  controlUI.style.marginBottom = '22px';
-  controlUI.style.textAlign = 'center';
-  controlUI.title = 'Click to recenter the map';
-  controlDiv.appendChild(controlUI);
-
-  // Set CSS for the control interior
-  var controlText = document.createElement('div');
-  controlText.style.color = 'rgb(25,25,25)';
-  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-  controlText.style.fontSize = '16px';
-  controlText.style.lineHeight = '38px';
-  controlText.style.paddingLeft = '5px';
-  controlText.style.paddingRight = '5px';
-  controlText.innerHTML = 'List View';
-  controlUI.appendChild(controlText);
-
-  // Setup the click event listeners: simply set the map to
-  // Chicago
-  google.maps.event.addDomListener(controlUI, 'click', function() {
-    map.setCenter(chicago)
-  });
-
-}
-
-function initialize() {
-  // Create the DIV to hold the control and
-  // call the CenterControl() constructor passing
-  // in this DIV.
-  var centerControlDiv = document.createElement('div');
-  var centerControl = new CenterControl(centerControlDiv, map);
-
-  centerControlDiv.index = 1;
-  //map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
-}
-
-    Polymer({
-        data: null,
-        keys: null,
-        LatLngTolongitude: function(value) {
-          if (value !== undefined) {
-            return +value.split(',')[1];
-          }
-        },
-        LatLngTolatitude: function(value) {
-          if (value !== undefined) {
-            return +value.split(',')[0];
-          }
-        },
-        geofilter: function(value,data) {
-          if (data !== null && value !== null) {
-            setmap();
-            //initialize();
-            var check = area.contains_str_latlng;
-            var output=[];
-            value.forEach(function(key) {
-              if (check(data[key].LatLng)) {
-                output.push(key);
-              }
-            });
-            var d = document.querySelectorAll("html /deep/ #globals");
-            this.$.globals.values.pinsinmap = output;
-            return output;
-          }
-        },
-        ready: function() {
-          console.log('Pins: ' + this.$.globals.values.pinsinmap);
-          pinsinmap = this.$.globals.values.pinsinmap;
+  function firstType (value,data) {
+    var isFirst = false;
+    for(var index in data) { 
+      var attr = data[index].type; 
+      if (data[value].type === attr) {
+        if (isFirst) {
+          return false;
+          } else {
+          isFirst = true;
         }
-    });
-    </script>
+        if (index === value) {
+          return isFirst;
+        }
+      }
+    }
+    return true;
+  }  
+  function ofType (value,data,type) {
+    if (data[value].type !== type) {
+      return false;
+      } else {
+      return true;
+    }
+  }
+  function hasOwnProperty(obj, prop) {
+    if (obj === null) {
+      return false;
+    }
+    var proto = obj.__proto__ || obj.constructor.prototype;
+    return (prop in obj) &&
+    (!(prop in proto) || proto[prop] !== obj[prop]);
+  }
+
+  Polymer({
+    data: null,
+    keys: null,
+    LatLngTolongitude: function(value) {
+      if (value !== undefined) {
+        return +value.split(',')[1];
+      }
+    },
+    LatLngTolatitude: function(value) {
+      if (value !== undefined) {
+        return +value.split(',')[0];
+      }
+    },
+    geofilter: function(value,data) {
+      if (data !== null && value !== null) {
+        setmap();
+        //initialize();
+        var check = area.contains_str_latlng;
+        var output=[];
+        value.forEach(function(key) {
+          if (check(data[key].LatLng)) {
+            output.push(key);
+          }
+        });
+        var d = document.querySelectorAll("html /deep/ #globals");
+        this.$.globals.values.pinsinmap = output;
+        return output;
+      }
+    },
+    justCats: function(value,data){
+      console.log('justCats');
+      var output = [];
+      if (value !== undefined && value !== null ) {
+        value.forEach(function(entry) {
+          if (firstCat(entry,data)) {
+            output.push(entry); 
+          }
+        });
+      }
+      return output;
+    },
+    justCardsOfCats: function(value,data,type){
+      console.log('justCardsOfCats');
+      if (type === 'All') {
+        return value;
+        } else {
+        var output = [];
+        value.forEach(function(entry) {
+          if (ofCat(entry,data,type)) {
+            output.push(entry); 
+          }
+        });
+        return output;
+      }
+    },
+    justTypes: function(value,data){
+      console.log('justTypes');
+      var output = [];
+      if (value !== undefined && value !== null ) {
+        value.forEach(function(entry) {
+          if (firstType(entry,data)) {
+            output.push(entry); 
+          }
+        });
+      }
+      return output;
+    },
+    justCardsOfType: function(value,data,type){
+      console.log('justCardsOfType');
+      if (type === 'All') {
+        return value;
+        } else {
+        var output = [];
+        value.forEach(function(entry) {
+          if (ofType(entry,data,type)) {
+            output.push(entry); 
+          }
+        });
+        return output;
+      }
+    },
+    ready: function() {
+      console.log('Pins: ' + this.$.globals.values.pinsinmap);
+      pinsinmap = this.$.globals.values.pinsinmap;
+    }
+  });
+</script>
 </polymer-element>

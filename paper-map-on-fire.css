@@ -24,14 +24,6 @@
             left: 0;
             position: absolute;
         }
-        #filters {
-          top: 0;
-          position: absolute;
-        }
-        #cards {
-          top: 50%;
-          position: absolute;
-        }
         #core_icon_button2 {
             right: 20px;
             bottom: 20px;
@@ -58,6 +50,9 @@
         }
 		paper-card {
 			font-family: Roboto, Helvetica, Arial, sans-serif;
+			width: 300px;
+  			height: 120px;
+  			margin: 5px 5px 5px 0;
 		}
 		#paper-card .header h1 {
 			font-size: 20px;

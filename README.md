@@ -13,6 +13,9 @@ python -m SimpleHTTPServer
 ```
 goto `http://localhost:8000/paper-map-on-fire/demo.html`
 
+in a editer open components/paper-map-on-fire/paper-map-on-fire.html
+Fixed it :) send us a pull request
+
 
 See the [component page](http://polymerlabs.github.io/seed-element) for more information.
 

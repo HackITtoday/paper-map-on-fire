@@ -6,7 +6,9 @@ cd components
 git clone git@github.com:HackITtoday/paper-map-on-fire.git
 cd paper*
 bower install
-
+```
+Bower will  ask you stuff go for 5^
+```sh
 cd ..
 python -m SimpleHTTPServer
 

@@ -2,6 +2,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../app-globals/app-globals.html">
 <link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-button/paper-button.html">
 
 <polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url centering">
     <template>
@@ -19,11 +20,11 @@
             </google-map>
           </div> 
           <div id="filters">
-            <paper-button>Indoor Pool<mini-badge>60</mini-badge></ </paper-button>
+            <paper-button raised>Indoor Pool<mini-badge>60</mini-badge></ </paper-button>
           </div>
           <div id="cards"> 
             <template repeat="{{x in $.globals.values.pinsinmap}}">
-              <paper-card flex heading="{{data[x].value}}"><h3> :) <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
+              <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
             </template>
           </div>
         </div>

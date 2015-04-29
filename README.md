@@ -1,12 +1,19 @@
 paper-map-on-fire
 =================
-```
+```sh
 mkdir components
 cd components
 git clone git@github.com:HackITtoday/paper-map-on-fire.git
 cd paper*
 bower install
+
+cd ..
+python -m SimpleHTTPServer
+
 ```
+goto `http://localhost:8000/paper-map-on-fire/demo.html`
+
+
 See the [component page](http://polymerlabs.github.io/seed-element) for more information.
 
 ## Getting Started

@@ -10,18 +10,18 @@
         <!-- Firebase Element -->
         <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
         <app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}"></app-globals> 
-        <div>
+        <div id="filters">
           filters
         </div>
-        <div style="height:50%">
-          <div style="height: 100%;"> 
+        <div>
+          <div id="map_space"> 
             <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
               <template repeat="{{x in $.globals.values.pinsinmap}}">
                 <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
               </template>
             </google-map>
           </div> 
-          <div style="clear: both;"> 
+          <div id="cards"> 
             <template repeat="{{x in $.globals.values.pinsinmap}}">
               <paper-card flex heading="{{data[x].value}}"><h3> :) <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
             </template>

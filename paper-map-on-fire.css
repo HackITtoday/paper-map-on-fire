@@ -59,3 +59,6 @@
 		paper-card {
 			font-family: Roboto, Helvetica, Arial, sans-serif;
 		}
+		#paper-card .header h1 {
+			font-size: 20px;
+		}

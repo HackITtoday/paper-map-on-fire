@@ -28,7 +28,9 @@
     </template>
     -->
     <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
-      <paper-button raised on-tap="{{setFilter}}" filter="facilities" >{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
+      <paper-button raised on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
+        {{x.name}}<mini-badge>{{x.num }}</mini-badge>
+      </paper-button>
     </template>
   </div>
   <div id="cards"> 
@@ -137,7 +139,34 @@
     return (prop in obj) &&
     (!(prop in proto) || proto[prop] !== obj[prop]);
   }
-
+  function isEmpty(obj) {
+    for(var prop in obj) {
+      if(obj.hasOwnProperty(prop))
+      return false;
+    }
+    return true;
+  }
+  function hasTypes (value,data,types) {
+    for (var key in types) {
+      if (types.hasOwnProperty(key)) {
+        var obj = types[key];
+        for (var prop in obj) {
+          if(obj.hasOwnProperty(prop)){
+            if (data.hasOwnProperty(value)) {
+              if (data[value].hasOwnProperty(key)) {
+                if (obj[prop]) {
+                  if (data[value][key].indexOf(prop) !== -1 ) {
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
   Polymer({
     data: null,
     keys: null,
@@ -150,9 +179,9 @@
           e.currentTarget.raised = true;
         }
         this.filters[e.currentTarget.attributes["filter"].value] = {};
-        this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.innerText.replace(/[\d+]/g, '').trim()] =  !e.currentTarget.raised;
+        this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value] =  !e.currentTarget.raised;
       }
-      this.processedKeys = this.justCardsOfType(this.$.globals.values.pinsinmap, this.data, this.filters);
+      this.$.globals.values.pinsinmap = this.justOfTypes(this.$.globals.values.pinsinmap, this.data, this.filters);
     },
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
@@ -215,26 +244,16 @@
         return output;
       }
     },
-    justTypes: function(value,data){ console.log('justTypes');
-      console.log('justTypes');
-      var output = [];
-      if (value !== undefined && value !== null ) {
-        value.forEach(function(entry) {
-          if (firstType(entry,data)) {
-            output.push(entry); 
-          }
-        });
+    justOfTypes: function(value,data,types){ console.log('justOfTypes');
+      if (value === null) {
+        return null;
       }
-      return output;
-    },
-    justCardsOfType: function(value,data,type){ console.log('justCardsOfType');
-      console.log('justCardsOfType');
-      if (type === 'All') {
+      if (isEmpty(types)) {
         return value;
         } else {
         var output = [];
         value.forEach(function(entry) {
-          if (ofType(entry,data,type)) {
+          if (hasTypes(entry,data,types)) {
             output.push(entry); 
           }
         });

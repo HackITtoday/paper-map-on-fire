@@ -28,7 +28,7 @@
     </template>
     -->
     <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
-      <paper-button raised on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
+      <paper-button raised?="ifFiltered" on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
         {{x.name}}<mini-badge>{{x.num }}</mini-badge>
       </paper-button>
     </template>
@@ -36,14 +36,14 @@
   <div id="cards"> 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
 
-    	<paper-card flex heading="{{data[x].value}}">
-			<h3> 
-				<a href="{{data[x].url}}" > {{data[x].value}} </a>
-			</h3>
-			<div id="actions">
-        		<paper-fab mini icon="add"></paper-fab>
-      		</div>
-		</paper-card>
+      <paper-card flex heading="{{data[x].value}}">
+        <h3> 
+          <a href="{{data[x].url}}" > {{data[x].value}} </a>
+       </h3>
+       <div id="actions">
+         <paper-fab mini icon="add"></paper-fab>
+       </div>
+    </paper-card>
 
     </template>
   </div>
@@ -171,6 +171,17 @@
     data: null,
     keys: null,
     filters:{},
+    ifFiltered: function(e) {
+      if (hasOwnProperty(e.currentTarget.attributes,"filter")){
+        if (hasOwnProperty(e.currentTarget,"raised")) {
+          if (hasOwnProperty(this.filters,e.currentTarget.attributes["filter"].value)) {
+            if (hasOwnProperty(this.filters[e.currentTarget.attributes["filter"].value], e.currentTarget.attributes["title"].value)) {
+              e.currentTarget.raised = this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value];
+            }
+          }
+        }
+      }
+    },
     setFilter: function(e) {
       if (hasOwnProperty(e.currentTarget.attributes,"filter")){
         if (hasOwnProperty(e.currentTarget,"raised") && e.currentTarget.raised === true) {

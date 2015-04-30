@@ -129,7 +129,11 @@
           // not from prototype prop inherited
           if(obj.hasOwnProperty(prop)){
             debugger;
-            alert(prop + " = " + obj[prop]);
+            if (data.hasOwnProperty(value)) {
+              if (data[value].hasOwnProperty(key)) {
+                alert(prop + " = " + obj[prop] + " = " + data[value][key]);
+              }
+            }
           }
         }
       }

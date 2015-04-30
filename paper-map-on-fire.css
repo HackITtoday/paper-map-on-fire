@@ -65,6 +65,23 @@
 		paper-card a {
 			text-decoration: none;
 		}
+<<<<<<< HEAD
 		#cards {
 			margin-top:250px;
 		}
+=======
+mini-badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 100;
+    color: #FFF;
+    line-height: 1.2;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+    background-color: #6F6F6F;
+    border-radius: 10px;
+}
+>>>>>>> de9b99fb525acc240f3c58c8825eee50273298e1

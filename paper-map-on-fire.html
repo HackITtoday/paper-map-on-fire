@@ -3,18 +3,20 @@
 <link rel="import" href="../app-globals/app-globals.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-fab/paper-fab.html">
 
 <polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url centering">
 <template>
 <link rel="stylesheet" href="paper-map-on-fire.css">
 
 <!-- Firebase Element -->
-<firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" id="paperMapOnFireBase"></firebase-element>
-<app-globals id="globals" pinsinmap="{{keys |  geofilter(data) |justOfTypes(data,filters) }}" filters={{filters}}></app-globals> 
+<firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" dataready id="paperMapOnFireBase"></firebase-element>
+<app-globals id="globals" pinsinmap="{{keys | geofilter(data)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
     <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
-      <template repeat="{{x in $.globals.values.pinsinmap }}">
+      <template repeat="{{x in $.globals.values.pinsinmap}}">
         <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
@@ -26,20 +28,22 @@
     </template>
     -->
     <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
-      <paper-button raised on-tap="{{setFilter}}" filter="facilities" title="{{ x.name }}"  >{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
+      <paper-button raised on-tap="{{setFilter}}" filter="facilities" >{{ x.name }} <mini-badge> {{ x.num }} </mini-badge></paper-button>
     </template>
   </div>
   <div id="cards"> 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
-    <paper-card flex heading="{{data[x].value}}">
-    <h3> 
-      <a href="{{data[x].url}}" > {{x}} </a>
-    </h3>
-    <div actions>
-      <paper-button icon="heart"></paper-button>
-      </div actions>
-      </paper-card>
-      </template>
+
+    	<paper-card flex heading="{{data[x].value}}">
+			<h3> 
+				<a href="{{data[x].url}}" > {{data[x].value}} </a>
+			</h3>
+			<div id="actions">
+        		<paper-fab mini icon="add"></paper-fab>
+      		</div>
+		</paper-card>
+
+    </template>
   </div>
 </div>
 </template>
@@ -88,13 +92,7 @@
     });
     initialize = false;
   };
-  function isEmpty(obj) {
-    for(var prop in obj) {
-      if(obj.hasOwnProperty(prop))
-      return false;
-    }
-    return true;
-  }
+
   function getArray(value,data,theArray) {
     var is = [];
     if (hasOwnProperty(data[value],theArray)) {
@@ -126,29 +124,6 @@
     }
     return true;
   }  
-  function hasTypes (value,data,types) {
-    for (var key in types) {
-      if (types.hasOwnProperty(key)) {
-        var obj = types[key];
-        for (var prop in obj) {
-          // important check that this is objects own property 
-          // not from prototype prop inherited
-          if(obj.hasOwnProperty(prop)){
-            if (data.hasOwnProperty(value)) {
-              if (data[value].hasOwnProperty(key)) {
-                if (obj[prop]) {
-                  if (data[value][key].indexOf(prop) !== -1 ) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return false;
-  }
   function ofType (value,data,type) {
     if (data[value].type !== type) {
       return false;
@@ -177,9 +152,9 @@
           e.currentTarget.raised = true;
         }
         this.filters[e.currentTarget.attributes["filter"].value] = {};
-        this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value] =  !e.currentTarget.raised;
+        this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.innerText.replace(/[\d+]/g, '').trim()] =  !e.currentTarget.raised;
       }
-      this.$.globals.values.pinsinmap = this.justOfTypes(this.$.globals.values.pinsinmap, this.data, this.filters);
+      this.processedKeys = this.justCardsOfType(this.$.globals.values.pinsinmap, this.data, this.filters);
     },
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
@@ -228,16 +203,40 @@
       }
       return result;
     },
-    justOfTypes: function(value,data,types){ console.log('justOfTypes');
-      if (value === null) {
-        return null;
+    justCardsOfCats: function(value,data,type){ // needs work
+      console.log('justCardsOfCats');
+      if (type === 'All') {
+        return value;
+      } else {
+        var output = [];
+        value.forEach(function(entry) {
+          if (ofCat(entry,data,type)) {
+            output.push(entry); 
+          }
+        });
+        return output;
       }
-      if (isEmpty(types)) {
+    },
+    justTypes: function(value,data){ console.log('justTypes');
+      console.log('justTypes');
+      var output = [];
+      if (value !== undefined && value !== null ) {
+        value.forEach(function(entry) {
+          if (firstType(entry,data)) {
+            output.push(entry); 
+          }
+        });
+      }
+      return output;
+    },
+    justCardsOfType: function(value,data,type){ console.log('justCardsOfType');
+      console.log('justCardsOfType');
+      if (type === 'All') {
         return value;
         } else {
         var output = [];
         value.forEach(function(entry) {
-          if (hasTypes(entry,data,types)) {
+          if (ofType(entry,data,type)) {
             output.push(entry); 
           }
         });

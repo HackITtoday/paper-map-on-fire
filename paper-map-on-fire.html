@@ -31,7 +31,7 @@
   </div>
   <div id="cards"> 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
-      <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{data[x].value}} </a></h3></paper-card>
+      <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{x}} </a></h3></paper-card>
     </template>
   </div>
 </div>
@@ -113,6 +113,26 @@
     }
     return true;
   }  
+  function hasTypes (value,data,types) {
+    for (var key in types) {
+      if (types.hasOwnProperty(key)) {
+        var obj = types[key];
+        for (var prop in obj) {
+          // important check that this is objects own property 
+          // not from prototype prop inherited
+          if(obj.hasOwnProperty(prop)){
+            debugger;
+            alert(prop + " = " + obj[prop]);
+          }
+        }
+      }
+    }
+    if (data[value].type !== type) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   function ofType (value,data,type) {
     if (data[value].type !== type) {
       return false;
@@ -143,7 +163,7 @@
         this.filters[e.currentTarget.attributes["filter"].value] = {};
         this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.innerText.replace(/[\d+]/g, '').trim()] =  !e.currentTarget.raised;
       }
-      this.processedKeys = this.justCardsOfType(this.$.globals.values.pinsinmap, this.data, this.filters);
+      this.processedKeys = this.justOfTypes(this.$.globals.values.pinsinmap, this.data, this.filters);
     },
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
@@ -192,20 +212,6 @@
       }
       return result;
     },
-    justCardsOfCats: function(value,data,type){ // needs work
-      console.log('justCardsOfCats');
-      if (type === 'All') {
-        return value;
-      } else {
-        var output = [];
-        value.forEach(function(entry) {
-          if (ofCat(entry,data,type)) {
-            output.push(entry); 
-          }
-        });
-        return output;
-      }
-    },
     justTypes: function(value,data){ console.log('justTypes');
       console.log('justTypes');
       var output = [];
@@ -218,14 +224,13 @@
       }
       return output;
     },
-    justCardsOfType: function(value,data,type){ console.log('justCardsOfType');
-      console.log('justCardsOfType');
-      if (type === 'All') {
+    justOfTypes: function(value,data,types){ console.log('justOfTypes');
+      if (types === {}) {
         return value;
         } else {
         var output = [];
         value.forEach(function(entry) {
-          if (ofType(entry,data,type)) {
+          if (hasTypes(entry,data,types)) {
             output.push(entry); 
           }
         });

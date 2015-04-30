@@ -31,8 +31,15 @@
   </div>
   <div id="cards"> 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
-      <paper-card flex heading="{{data[x].value}}"><h3> <a href="{{data[x].url}}" > {{x}} </a></h3></paper-card>
-    </template>
+    <paper-card flex heading="{{data[x].value}}">
+    <h3> 
+      <a href="{{data[x].url}}" > {{x}} </a>
+    </h3>
+    <div actions>
+      <paper-button icon="heart"></paper-button>
+      </div actions>
+      </paper-card>
+      </template>
   </div>
 </div>
 </template>

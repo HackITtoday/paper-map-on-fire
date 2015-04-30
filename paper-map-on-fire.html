@@ -10,7 +10,7 @@
 
 <!-- Firebase Element -->
 <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" id="paperMapOnFireBase"></firebase-element>
-<app-globals id="globals" pinsinmap="{{keys |  geofilter(data) |justOfTypes(data,filters) }}" filters={{filters}}></app-globals> 
+<app-globals id="globals" pinsinmap="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
     <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
@@ -43,9 +43,7 @@
   </div>
 </div>
 </template>
-
 <script>
-
   //
   //globals
   //

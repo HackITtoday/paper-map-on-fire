@@ -79,3 +79,17 @@ h3 a {
 #actions {
 	margin-left: 240px;
 }
+mini-badge {
+display: inline-block;
+min-width: 10px;
+padding: 3px 7px;
+font-size: 12px;
+font-weight: 100;
+color: #FFF;
+line-height: 1.2;
+vertical-align: baseline;
+white-space: nowrap;
+text-align: center;
+background-color: #6F6F6F;
+border-radius: 10px;
+}

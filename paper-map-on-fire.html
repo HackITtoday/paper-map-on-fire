@@ -37,12 +37,14 @@
     <template repeat="{{x in $.globals.values.pinsinmap}}">
 
       <paper-card flex heading="{{data[x].value}}">
-        <h3> 
-          <a href="{{data[x].url}}" > {{data[x].value}} </a>
+		<div id="cardtitle" style="width:180px">
+			<h3> 
+          <a href="{{data[x].url}}" style="height:80px" > {{data[x].value}} </a>
        </h3>
-       <div id="actions">
-         <paper-fab mini icon="add"></paper-fab>
-       </div>
+		  </div>
+        <div id="cardimg" style="position:absolute;left:180px;top:0px">
+			<img src="http://placehold.it/120x120">
+		</div>
     </paper-card>
 
     </template>

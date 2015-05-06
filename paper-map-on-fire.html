@@ -146,26 +146,27 @@
     }
     return true;
   }
-  function hasTypes (value,data,types) {
+  function hasTypes (data,types) {
+    var has = false;
     for (var key in types) {
       if (types.hasOwnProperty(key)) {
         var obj = types[key];
         for (var prop in obj) {
           if(obj.hasOwnProperty(prop)){
-            if (data.hasOwnProperty(value)) {
-              if (data[value].hasOwnProperty(key)) {
-                if (obj[prop]) {
-                  if (data[value][key].indexOf(prop) !== -1 ) {
-                    return true;
-                  }
+            if (data.hasOwnProperty(key)) {
+              if (obj[prop]) {
+                if (data[key].indexOf(prop) === -1 ) {
+                  return false;
                 }
               }
+            } else {
+              return false;
             }
           }
         }
       }
     }
-    return false;
+    return true;
   }
   Polymer({
     data: null,
@@ -183,16 +184,19 @@
       }
     },
     setFilter: function(e) {
+      debugger;
       if (hasOwnProperty(e.currentTarget.attributes,"filter")){
-        if (hasOwnProperty(e.currentTarget,"raised") && e.currentTarget.raised === true) {
-          e.currentTarget.raised = false;
+        if (hasOwnProperty(e.currentTarget.attributes.filter, "value")) {
+          if (hasOwnProperty(this.filters, e.currentTarget.attributes.filter.value)) {
+            this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value] = 
+            !this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value];
           } else {
-          e.currentTarget.raised = true;
+            this.filters[e.currentTarget.attributes.filter.value] = {};
+            this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value] = true;
+          }
+          this.$.globals.values.pinsinmap = this.geofilter(this.justOfTypes(this.keys, this.data, this.filters), this.data);
         }
-        this.filters[e.currentTarget.attributes["filter"].value] = {};
-        this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value] =  !e.currentTarget.raised;
       }
-      this.$.globals.values.pinsinmap = this.justOfTypes(this.$.globals.values.pinsinmap, this.data, this.filters);
     },
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
@@ -264,7 +268,7 @@
         } else {
         var output = [];
         value.forEach(function(entry) {
-          if (hasTypes(entry,data,types)) {
+          if (hasTypes(data[entry],types)) {
             output.push(entry); 
           }
         });

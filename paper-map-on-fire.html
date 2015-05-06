@@ -35,18 +35,16 @@
   </div>
   <div id="cards"> 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
-
-      <paper-card flex heading="{{data[x].value}}">
-		<div id="cardtitle" style="width:180px">
-			<h3> 
+     <paper-card flex heading="{{data[x].value}}">
+      <div id="cardtitle" style="width:180px">
+        <h3> 
           <a href="{{data[x].url}}"> {{data[x].value}} </a>
-       </h3>
-		  </div>
-        <div id="cardimg" style="position:absolute;left:180px;top:0px">
-			<img src="http://placehold.it/120x120">
-		</div>
-    </paper-card>
-
+        </h3>
+      </div>
+      <div id="cardimg" style="position:absolute;left:180px;top:0px">
+        <img src="https://sdyrcs.cloudimage.io/s/crop/120x120/{{ data[x].image }}">
+      </div>
+     </paper-card>
     </template>
   </div>
 </div>

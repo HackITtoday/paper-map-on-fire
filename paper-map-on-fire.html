@@ -1,12 +1,14 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
 <link rel="import" href="../google-map/google-map.html">
+<link rel="import" href="../google-map/google-map-search.html">
 <link rel="import" href="../app-globals/app-globals.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../core-input/core-input.html">
 <link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../paper-fab/paper-fab.html">
 
-<polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url centering">
+<polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url location centering">
 <template>
 <link rel="stylesheet" href="paper-map-on-fire.css">
 
@@ -15,11 +17,13 @@
 <app-globals id="globals" pinsinmap="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
-    <google-map longitude="{{ centering|LatLngTolongitude }}" latitude="{{ centering|LatLngTolatitude }}" id="google_map">
+    <google-map     latitude="{{ $.google_map_search.result.latitude }}" longitude="{{ $.google_map_search.result.longitude }}" id="google_map">
       <template repeat="{{x in $.globals.values.pinsinmap}}">
         <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
+    <google-map-search map="{{ $.google_map.map }}" query="{{ location }}" id="google_map_search"></google-map-search>
+          
   </div> 
   <div id="filters">
     <!-- 
@@ -34,6 +38,8 @@
     </template>
   </div>
   <div id="cards"> 
+    <input placeholder="text input" id="core_input" value="{{ location }}"></input>
+
     <template repeat="{{x in $.globals.values.pinsinmap}}">
      <paper-card flex heading="{{data[x].value}}">
       <div id="cardtitle" style="width:180px">
@@ -46,6 +52,7 @@
       </div>
      </paper-card>
     </template>
+
   </div>
 </div>
 </template>
@@ -173,18 +180,18 @@
     keys: null,
     filters:{},
     ifFiltered: function(e) {
+      debugger;
       if (hasOwnProperty(e.currentTarget.attributes,"filter")){
         if (hasOwnProperty(e.currentTarget,"raised")) {
           if (hasOwnProperty(this.filters,e.currentTarget.attributes["filter"].value)) {
             if (hasOwnProperty(this.filters[e.currentTarget.attributes["filter"].value], e.currentTarget.attributes["title"].value)) {
-              e.currentTarget.raised = this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value];
+              e.currentTarget.raised = !this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value];
             }
           }
         }
       }
     },
     setFilter: function(e) {
-      debugger;
       if (hasOwnProperty(e.currentTarget.attributes,"filter")){
         if (hasOwnProperty(e.currentTarget.attributes.filter, "value")) {
           if (hasOwnProperty(this.filters, e.currentTarget.attributes.filter.value)) {

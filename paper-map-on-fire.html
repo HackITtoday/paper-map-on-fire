@@ -17,7 +17,7 @@
 <app-globals id="globals" pinsinmap="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
-    <google-map     latitude="{{ $.google_map_search.result.latitude }}" longitude="{{ $.google_map_search.result.longitude }}" id="google_map">
+    <google-map  zoom="{{ zoom }}"   latitude="{{ $.google_map_search.result.latitude }}" longitude="{{ $.google_map_search.result.longitude }}" id="google_map">
       <template repeat="{{x in $.globals.values.pinsinmap}}">
         <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
       </template>
@@ -33,18 +33,17 @@
     -->
     <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
       <paper-button raised?="ifFiltered" on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
-        {{x.name}}<mini-badge>{{x.num }}</mini-badge>
+        {{x.name}}<mini-badge>{{x.num}}</mini-badge>
       </paper-button>
     </template>
   </div>
   <div id="cards"> 
-    <input placeholder="text input" id="core_input" value="{{ location }}"></input>
 
     <template repeat="{{x in $.globals.values.pinsinmap}}">
      <paper-card flex heading="{{data[x].value}}">
       <div id="cardtitle" style="width:180px">
         <h3> 
-          <a href="{{data[x].url}}"> {{data[x].value}} </a>
+          <a href="{{data[x].url}}">{{data[x].value}}</a>
         </h3>
       </div>
       <div id="cardimg" style="position:absolute;left:180px;top:0px">
@@ -96,10 +95,18 @@
       var keys = app.keys;
       // app.pinsinmap = 
       app.geofilter(keys,data);
+      app.zoom = app.zoom + 2;
     });
     initialize = false;
   };
 
+  function redoZoom  (zoom) { //map
+    if (zoom) {
+      } else {
+      return zoom;
+    }
+
+  }    
   function getArray(value,data,theArray) {
     var is = [];
     if (hasOwnProperty(data[value],theArray)) {
@@ -288,4 +295,6 @@
     }
   });
 </script>
+    <input placeholder="text input" id="core_input" value="{{ location }}"></input>
+    <input placeholder="text input" id="core_inputz" value="{{ zoom }}"></input>
 </polymer-element>

@@ -2,11 +2,11 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 <link rel="import" href="../app-globals/app-globals.html">
-<link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../core-input/core-input.html">
 <link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../paper-fab/paper-fab.html">
+<link rel="import" href="../paper-cards-on-fire/paper-cards-on-fire.html">
 
 <polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url location centering">
 <template>
@@ -14,11 +14,11 @@
 
 <!-- Firebase Element -->
 <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" id="paperMapOnFireBase"></firebase-element>
-<app-globals id="globals" pinsinmap="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
+<app-globals id="globals" listings="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
     <google-map  zoom="{{ zoom }}"   latitude="{{ $.google_map_search.result.latitude }}" longitude="{{ $.google_map_search.result.longitude }}" id="google_map">
-      <template repeat="{{x in $.globals.values.pinsinmap}}">
+      <template repeat="{{x in $.globals.values.listings}}">
         <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
@@ -31,27 +31,14 @@
       <paper-button on-tap="{{setFilter}}">{{data[key].type}}</paper-button>
     </template>
     -->
-    <template repeat="{{x in $.globals.values.pinsinmap | justProperties(data,'facilities')}}">
+    <template repeat="{{x in $.globals.values.listings | justProperties(data,'facilities')}}">
       <paper-button raised?="ifFiltered" on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
         {{x.name}}<mini-badge>{{x.num}}</mini-badge>
       </paper-button>
     </template>
   </div>
   <div id="cards"> 
-
-    <template repeat="{{x in $.globals.values.pinsinmap}}">
-     <paper-card flex heading="{{data[x].value}}">
-      <div id="cardtitle" style="width:180px">
-        <h3> 
-          <a href="{{data[x].url}}">{{data[x].value}}</a>
-        </h3>
-      </div>
-      <div id="cardimg" style="position:absolute;left:180px;top:0px">
-        <img src="https://sdyrcs.cloudimage.io/s/crop/120x120/{{ data[x].image }}">
-      </div>
-     </paper-card>
-    </template>
-
+    <paper-cards-on-fire data="{{data}}" cards="{{$.globals.values.listings}}" ></paper-cards-on-fire>
   </div>
 </div>
 </template>
@@ -60,7 +47,7 @@
   //globals
   //
   var map;
-  var pinsinmap;
+  var listings;
   var area = {
     reset: function() { console.log('reset');
       area.bounds = new google.maps.LatLngBounds();
@@ -93,7 +80,7 @@
       var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
       var data = app.data;
       var keys = app.keys;
-      // app.pinsinmap = 
+      // app.listings = 
       app.geofilter(keys,data);
       app.zoom = app.zoom + 2;
     });
@@ -208,7 +195,7 @@
             this.filters[e.currentTarget.attributes.filter.value] = {};
             this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value] = true;
           }
-          this.$.globals.values.pinsinmap = this.geofilter(this.justOfTypes(this.keys, this.data, this.filters), this.data);
+          this.$.globals.values.listings = this.geofilter(this.justOfTypes(this.keys, this.data, this.filters), this.data);
         }
       }
     },
@@ -234,7 +221,7 @@
           }
         });
         var d = document.querySelectorAll("html /deep/ #globals");
-        this.$.globals.values.pinsinmap = output;
+        this.$.globals.values.listings = output;
         return output;
       }
     },
@@ -290,8 +277,8 @@
       }
     },
     ready: function() { console.log('ready');
-      console.log('Pins: ' + this.$.globals.values.pinsinmap);
-      pinsinmap = this.$.globals.values.pinsinmap;
+      console.log('Pins: ' + this.$.globals.values.listings);
+      listings = this.$.globals.values.listings;
     }
   });
 </script>

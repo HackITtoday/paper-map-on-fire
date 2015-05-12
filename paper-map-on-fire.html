@@ -1,12 +1,12 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
-<link rel="import" href="../app-globals/app-globals.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../core-input/core-input.html">
 <link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../paper-cards-on-fire/paper-cards-on-fire.html">
+<link rel="import" href="../paper-filter-on-fire/paper-filter-on-fire.html">
 
 <polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url location centering">
 <template>
@@ -14,31 +14,22 @@
 
 <!-- Firebase Element -->
 <firebase-element location="{{ url }}" data="{{ data }}" keys="{{ keys }}" id="paperMapOnFireBase"></firebase-element>
-<app-globals id="globals" listings="{{keys|geofilter(data)|justOfTypes(data,filters)}}" filters={{filters}}></app-globals> 
 <div>
   <div id="map_space"> 
     <google-map  zoom="{{ zoom }}"   latitude="{{ $.google_map_search.result.latitude }}" longitude="{{ $.google_map_search.result.longitude }}" id="google_map">
-      <template repeat="{{x in $.globals.values.listings}}">
+      <template repeat="{{x in pins }}">
         <google-map-marker longitude="{{ data[x].LatLng|LatLngTolongitude }}" latitude="{{ data[x].LatLng|LatLngTolatitude }}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
+
     <google-map-search map="{{ $.google_map.map }}" query="{{ location }}" id="google_map_search"></google-map-search>
           
   </div> 
   <div id="filters">
-    <!-- 
-    <template repeat="{{key in keys | justTypes(data)}}">
-      <paper-button on-tap="{{setFilter}}">{{data[key].type}}</paper-button>
-    </template>
-    -->
-    <template repeat="{{x in $.globals.values.listings | justProperties(data,'facilities')}}">
-      <paper-button raised?="ifFiltered" on-tap="{{setFilter}}" filter="facilities" title="{{x.name}}">
-        {{x.name}}<mini-badge>{{x.num}}</mini-badge>
-      </paper-button>
-    </template>
+    <paper-filter-on-fire data="{{data}}" keys="{{$.globals.values.listings}}" filters="{{filters}}" by="facilities" filtedKeys="{{filtedKeys}}"></paper-filter-on-fire>
   </div>
   <div id="cards"> 
-    <paper-cards-on-fire data="{{data}}" cards="{{$.globals.values.listings}}" ></paper-cards-on-fire>
+    <paper-cards-on-fire data="{{data}}" keys="{{filtedKeys}}" ></paper-cards-on-fire>
   </div>
 </div>
 </template>
@@ -80,58 +71,16 @@
       var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
       var data = app.data;
       var keys = app.keys;
-      // app.listings = 
-      app.geofilter(keys,data);
-      app.zoom = app.zoom + 2;
+      app.pins = app.geofilter(keys,data);
     });
     initialize = false;
   };
-
-  function redoZoom  (zoom) { //map
+  function redoZoom (zoom) { //map
     if (zoom) {
       } else {
       return zoom;
     }
-
   }    
-  function getArray(value,data,theArray) {
-    var is = [];
-    if (hasOwnProperty(data[value],theArray)) {
-      is = data[value][theArray];
-    }
-    return is;
-  }  
-  function ofCat (value, data, cat) {
-    if (data[value]["cat"] !== cat) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-  function firstType (value,data) {
-    var isFirst = false;
-    for(var index in data) { 
-      var attr = data[index].type; 
-      if (data[value].type === attr) {
-        if (isFirst) {
-          return false;
-          } else {
-          isFirst = true;
-        }
-        if (index === value) {
-          return isFirst;
-        }
-      }
-    }
-    return true;
-  }  
-  function ofType (value,data,type) {
-    if (data[value].type !== type) {
-      return false;
-    } else {
-      return true;
-    }
-  }
   function hasOwnProperty(obj, prop) {
     if (obj === null) {
       return false;
@@ -140,65 +89,11 @@
     return (prop in obj) &&
     (!(prop in proto) || proto[prop] !== obj[prop]);
   }
-  function isEmpty(obj) {
-    for(var prop in obj) {
-      if(obj.hasOwnProperty(prop))
-      return false;
-    }
-    return true;
-  }
-  function hasTypes (data,types) {
-    var has = false;
-    for (var key in types) {
-      if (types.hasOwnProperty(key)) {
-        var obj = types[key];
-        for (var prop in obj) {
-          if(obj.hasOwnProperty(prop)){
-            if (data.hasOwnProperty(key)) {
-              if (obj[prop]) {
-                if (data[key].indexOf(prop) === -1 ) {
-                  return false;
-                }
-              }
-            } else {
-              return false;
-            }
-          }
-        }
-      }
-    }
-    return true;
-  }
   Polymer({
     data: null,
     keys: null,
     filters:{},
-    ifFiltered: function(e) {
-      debugger;
-      if (hasOwnProperty(e.currentTarget.attributes,"filter")){
-        if (hasOwnProperty(e.currentTarget,"raised")) {
-          if (hasOwnProperty(this.filters,e.currentTarget.attributes["filter"].value)) {
-            if (hasOwnProperty(this.filters[e.currentTarget.attributes["filter"].value], e.currentTarget.attributes["title"].value)) {
-              e.currentTarget.raised = !this.filters[e.currentTarget.attributes["filter"].value][e.currentTarget.attributes["title"].value];
-            }
-          }
-        }
-      }
-    },
-    setFilter: function(e) {
-      if (hasOwnProperty(e.currentTarget.attributes,"filter")){
-        if (hasOwnProperty(e.currentTarget.attributes.filter, "value")) {
-          if (hasOwnProperty(this.filters, e.currentTarget.attributes.filter.value)) {
-            this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value] = 
-            !this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value];
-          } else {
-            this.filters[e.currentTarget.attributes.filter.value] = {};
-            this.filters[e.currentTarget.attributes.filter.value][e.currentTarget.attributes["title"].value] = true;
-          }
-          this.$.globals.values.listings = this.geofilter(this.justOfTypes(this.keys, this.data, this.filters), this.data);
-        }
-      }
-    },
+    pins:{},
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
       if (value !== undefined) {
         return +value.split(',')[1];
@@ -220,59 +115,6 @@
             output.push(key);
           }
         });
-        var d = document.querySelectorAll("html /deep/ #globals");
-        this.$.globals.values.listings = output;
-        return output;
-      }
-    },
-    justProperties: function(value,data,properties){ console.log('justProperties');
-      var output = [];
-      var output_num = [];
-      if (value !== undefined && value !== null ) {
-        value.forEach(function(entry) {
-          getArray(entry, data, properties).forEach(function(entryA) {
-            if (output.indexOf(entryA) === -1){
-              output.push(entryA); 
-              output_num.push( 1 );
-            } else {
-              output_num[output.indexOf(entryA)]++;
-            }
-          });
-        });
-      }
-      var result = [];
-      for (var i = 0, l = output.length; i < l; i++) {
-        result[i] = {name:output[i],num:output_num[i]};
-      }
-      return result;
-    },
-    justCardsOfCats: function(value,data,type){ // needs work
-      console.log('justCardsOfCats');
-      if (type === 'All') {
-        return value;
-      } else {
-        var output = [];
-        value.forEach(function(entry) {
-          if (ofCat(entry,data,type)) {
-            output.push(entry); 
-          }
-        });
-        return output;
-      }
-    },
-    justOfTypes: function(value,data,types){ console.log('justOfTypes');
-      if (value === null) {
-        return null;
-      }
-      if (isEmpty(types)) {
-        return value;
-        } else {
-        var output = [];
-        value.forEach(function(entry) {
-          if (hasTypes(data[entry],types)) {
-            output.push(entry); 
-          }
-        });
         return output;
       }
     },
@@ -282,6 +124,4 @@
     }
   });
 </script>
-    <input placeholder="text input" id="core_input" value="{{ location }}"></input>
-    <input placeholder="text input" id="core_inputz" value="{{ zoom }}"></input>
 </polymer-element>

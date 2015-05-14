@@ -1,10 +1,4 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
-<link rel="import" href="../google-map/google-map.html">
-<link rel="import" href="../google-map/google-map-search.html">
-<link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="../core-input/core-input.html">
-<link rel="import" href="../core-icons/core-icons.html">
-<link rel="import" href="../paper-fab/paper-fab.html">
 <link rel="import" href="../paper-cards-on-fire/paper-cards-on-fire.html">
 <link rel="import" href="../paper-filter-on-fire/paper-filter-on-fire.html">
 <link rel="import" href="map-on-fire.html">
@@ -17,123 +11,68 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <div id="map_space"> 
-    <paper-map-on-fire location="{{location}}" data="{{data}}" pins="{{pins}}" ></paper-map-on-fire> 
+    <map-filter location="{{location}}" data="{{data}}" keys="{{keysForMap}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="filters">
-    <paper-filter-on-fire data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filtedKeys="{{filtedKeys}}"></paper-filter-on-fire>
+    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keysForFilter}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
   </div>
-  <div id="cards"> 
-    <paper-cards-on-fire data="{{data}}" keys="{{pins}}" ></paper-cards-on-fire>
+  <div id="cards">
+    {{data[facilitiesFilteredKeys[0]].title}}
+    <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
   </div>
 </div>
-{{filtedKeys}}
-{{pins}}
 </template>
 <script>
-  //
-  //globals
-  //
-  var map;
-  var listings;
-  var area = {
-    reset: function() { console.log('reset');
-      area.bounds = new google.maps.LatLngBounds();
+  Polymer("paper-map-on-fire",{
+    publish: {
+      cards: [],
+      facilitiesFilteredKeys: [],
+      mapFilteredKeys: [],
+      keys: [],
     },
-    bounds: {},
-    contains_str_latlng: function(LatLng) { console.log('contains_str_latlng');
-      if (LatLng !== undefined) {
-        return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
-        } else {
-        return false;
-      }
-    },
-    contains: function(lat, lng) { console.log('contains');
-      var point = new google.maps.LatLng(lat, lng);
-      return area.bounds.contains(point);
-    },
-    extend: function(lat, lng) { console.log('extend');
-      var point = new google.maps.LatLng(lat, lng);
-      this.bounds.extend(point);
-    }
-  };
-  var initialize = true;
-
-  function redoZoom (zoom) { //map
-    if (zoom) {
-      } else {
-      return zoom;
-    }
-  }    
-  function hasOwnProperty(obj, prop) {
-    if (obj === null) {
-      return false;
-    }
-    var proto = obj.__proto__ || obj.constructor.prototype;
-    return (prop in obj) &&
-    (!(prop in proto) || proto[prop] !== obj[prop]);
-  }
-  Polymer({
-    data: null,
-    keys: null,
-    filters:{},
-    pins:{},
-    LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
-      if (value !== undefined) {
-        return +value.split(',')[1];
-      }
-    },
-    LatLngTolatitu: function(value) { console.log('LatLngTolatitude');
-      if (value !== undefined) {
-        return +value.split(',')[0];
-      }
-    },
-    geofilter: function(keys,data) { console.log('geofilter');
-      if (data !== null && keys !== null) {
-        if (initialize) { setmap() };
-        var check = area.contains_str_latlng;
-        var output=[];
-//        for(var key in keys) {
-//          if (check(data[key].LatLng)) {
- //           output.push(key);
-  //        }
-   //     };
-        keys.forEach(function(key) {
-          if (check(data[key].LatLng)) {
-            output.push(key);
+    inBoth: function(a,b) {
+      output =[];
+      if (a === undefined || a.length === 0) {
+        return b;
+      };
+      if (b === undefined || b.length === 0) {
+        return a;
+      };
+      if (a.length > b.length) {
+        for (var x in b) {
+          if (b.indexOf(x)) {
+            output.push(x);
           }
-        });
-        return output;
-      }
-    },
-    setmap : function() {
-      var d = document.querySelectorAll("html /deep/ #google_map");
-      if (d.hasOwnProperty(0) && d[0].hasOwnProperty('map') ) {
-          map = d[0].map;
-          area.bounds = map.getBounds();
-          google.maps.event.addListener(map, 'idle', function() {
-            area.bounds = map.getBounds();
-            var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
-            app.pins = app.geofilter(app.keys, app.data);
-          });
-          d[0].addEventListener('google-map-ready', function(e) {
-            area.bounds = map.getBounds();
-            var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
-            app.pins = app.geofilter(app.keys, app.data);
-          });
-          initialize = false;
+        }
         } else {
-        if (initialize) {
-          initialize = false;
-          setTimeout(function(){ 
-            var app = document.querySelectorAll("html /deep/ #paperMapOnFire")[0];
-            app.setmap(); 
-          }, 3000);
+        for (var x in a) {
+          if (a.indexOf(x)) {
+            output.push(x);
+          }
         }
       }
+      debugger;
+      return output;
     },
-    ready: function() { console.log('ready');
-      this.setmap();
+    cards:[],
+    keysChanged: function(oldValue, newValue) {
+      debugger;
+      this.keysForFilter = newValue;  
+      this.keysForMap = newValue;  
+      //this.cards = newValue;
+    },
+    mapFilteredKeysChanged: function(oldValue, newValue) {
+      debugger;
+      // this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);  
+      this.cards = newValue;  
+    },
+    facilitiesFilteredKeysChanged: function(oldValue, newValue) {
+      debugger;
+      // this.cards = this.inBoth(newValue,this.mapFilteredKeys);  
+      this.cards = newValue;  
+    },
+    ready: function() { console.log('paper ready');
     }
   });
 </script>

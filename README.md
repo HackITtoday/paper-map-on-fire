@@ -1,5 +1,9 @@
 paper-map-on-fire
 =================
+
+This component works on the Google Polymer platform V0.5. It is a component that can be inserted in anywhere. 
+It filters the data by the bounds of the map. It can be moved and zoomed out and in and will reload or exclude further data.filters
+
 get the code (fork and update uri)
 ```sh
 mkdir components

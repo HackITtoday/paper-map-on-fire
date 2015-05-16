@@ -26,7 +26,9 @@
   ],
   "dependencies": {
     "firebase-element": "Polymer/firebase-element#^0.5.0",
-    "app-globals": "marcus7777/app-globals#master",
+    "url-value":"HackITtoday/url-value#master",
+    "paper-filter-on-fire":"HackITtoday/paper-filter-on-fire",
+    "paper-cards-on-fire":"HackITtoday/paper-cards-on-fire",
     "google-map": "GoogleWebComponents/google-map#master",
     "paper-card": "PolymerLabs/paper-card"
   },

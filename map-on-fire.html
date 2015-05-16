@@ -1,7 +1,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 
-<polymer-element id="mapFilter" name="map-filter" attributes="keys data show location filteredKeys">
+<polymer-element id="mapFilter" name="map-filter" attributes="keys data show pins location filteredKeys">
 <template>
   <style>
     :host {
@@ -11,26 +11,24 @@
     } 
   </style>
     <google-map latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
-      <template repeat="{{x in show | geofilter(data)}}">
+      <template repeat="{{x in pins}}">
         <google-map-marker longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
     <google-map-search map="{{$.google_map.map}}" query="{{location}}" id="google_map_search"></google-map-search>
-    keys:{{keys.length}}
-    filteredKeys:{{filteredKeys.length}}
-    show:{{show.length}}
 </template>
 <script>
   //
   //globals
   //
+
   var map;
   var area = {
     reset: function() { console.log('reset');
       area.bounds = new google.maps.LatLngBounds();
     },
     bounds: {},
-    containsStrLatlng: function(LatLng) { console.log('containsStrLatlng');
+    containsStrLatlng: function(LatLng) {
       if (LatLng !== undefined) {
         return area.contains(+LatLng.split(',')[0], +LatLng.split(',')[1]);
         } else {
@@ -38,7 +36,6 @@
       }
     },
     contains: function(lat, lng) { console.log('contains');
-      debugger;
       var point = new google.maps.LatLng(lat, lng);
       return area.bounds.contains(point);
     },
@@ -50,22 +47,27 @@
   var initialize = true;
   Polymer('map-filter', {
     publish: {
+
       cards: [],
       location:"Penzance",
       filteredKeys: [],
       keys: [],
       show: []
     },
+    showChanged: function(oldValue, newValue) {
+      area.bounds = map.getBounds();
+      this.pins = geofilter(newValue, this.data);  
+      this.filteredKeys = this.pins;
+    },
     keysChanged: function(oldValue, newValue) {
-      debugger;
-      this.keysForFilter = newValue;  
-      this.keysForMap = newValue;  
-      //this.cards = newValue;
+      area.bounds = map.getBounds();
+      this.pins = geofilter(newValue, this.data);  
+      this.filteredKeys = this.pins;
     },
     data: null,
     filters:{},
     pins:{},
-    LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
+    LatLngTolongitude: function(value) {
       if (value !== undefined) {
         return +value.split(',')[1];
       }
@@ -80,7 +82,6 @@
         if (initialize) { this.setmap(); }
         var check = area.containsStrLatlng;
         var output=[];
-        debugger;
         for(var key in keys) {
           if (hasOwnProperty(data[key],"LatLng") ) {
             if (check(data[key].LatLng)) {
@@ -88,13 +89,14 @@
             }
           }
         };
-        this.filteredKeys = output;
+       // this.filteredKeys = output;
+      //  this.show = output;
         return output;
       }
     },
     setmap: function() {
       var d = document.querySelectorAll('html /deep/ #google_map');
-      if (d.hasOwnProperty(0) && d[0].hasOwnProperty('map') ) {
+      if (d.hasOwnProperty(0)  ) {
           map = d[0].map;
           area.bounds = map.getBounds();
           google.maps.event.addListener(map, 'idle', function() {
@@ -102,24 +104,29 @@
             var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
             app.pins = app.geofilter(app.keys, app.data);
           });
-          d[0].addEventListener('google-map-ready', function() {
-            area.bounds = map.getBounds();
-            var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-            app.pins = app.geofilter(app.keys, app.data);
-          });
+
           initialize = false;
         } else {
         if (initialize) {
           initialize = false;
           setTimeout(function(){ 
             var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-            app.setmap(); 
+            app.setmap();
           }, 3000);
         }
       }
     },
     ready: function() { console.log('map ready');
-      this.setmap();
+      setTimeout(function(){
+        debugger;
+        var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
+        app.setmap(); 
+        setTimeout(function(){// load pins 
+          area.bounds = map.getBounds();
+          var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
+          app.pins = app.geofilter(app.keys, app.data);
+        },1000);
+      }, 3000);
     }
   });
 </script>

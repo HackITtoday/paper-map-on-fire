@@ -1,5 +1,6 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
 <link rel="import" href="../paper-cards-on-fire/paper-cards-on-fire.html">
+<link rel="import" href="../url-value/url-value.html">
 <link rel="import" href="../paper-filter-on-fire/paper-filter-on-fire.html">
 <link rel="import" href="map-on-fire.html">
 
@@ -7,29 +8,30 @@
 <template>
 <link rel="stylesheet" href="paper-map-on-fire.css">
 
-<!-- Firebase Element -->
+<url-value values="{{urlValues}}"></url-value>
+
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
-    <div id="map_space" style="height:400px"> 
-    <map-filter location="{{location}}" data="{{data}}" keys="{{keysForMap}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
-  </div> 
   <div id="filters">
-    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keysForFilter}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
+    <paper-filter-on-fire show="{{pins}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
   </div>
+    <div id="map_space" style="height:400px"> 
+      <map-filter pins="{{pins}}"  show="{{mapFilteredKeys}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+  </div> 
   <div id="cards">
-    {{data[facilitiesFilteredKeys[0]].title}}
-    <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
+    <paper-cards-on-fire data="{{data}}" keys="{{facilitiesFilteredKeys}}" ></paper-cards-on-fire>
   </div>
 </div>
 </template>
 <script>
   Polymer("paper-map-on-fire",{
     publish: {
-      cards: [],
-      facilitiesFilteredKeys: [],
-      mapFilteredKeys: [],
-      keys: [],
+      cards: {},
+      facilitiesFilteredKeys:[], 
+      mapFilteredKeys: {},
+      keys: {},
+      urlValues:{} 
     },
     inBoth: function(a,b) {
       output =[];
@@ -57,20 +59,17 @@
     },
     cards:[],
     keysChanged: function(oldValue, newValue) {
-      debugger;
-      this.keysForFilter = newValue;  
-      this.keysForMap = newValue;  
       //this.cards = newValue;
+    },
+    urlValuesChanged: function(oldValue, newValue) {
+      debugger;
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
       debugger;
-      // this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);  
-      this.cards = newValue;  
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
       debugger;
-      // this.cards = this.inBoth(newValue,this.mapFilteredKeys);  
-      this.cards = newValue;  
+      this.pins = newValue;
     },
     ready: function() { console.log('paper ready');
     }

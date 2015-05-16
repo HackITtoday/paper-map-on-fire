@@ -1,7 +1,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 
-<polymer-element id="mapFilter" name="map-filter" attributes="keys data location filteredKeys">
+<polymer-element id="mapFilter" name="map-filter" attributes="keys data show location filteredKeys">
 <template>
   <style>
     :host {
@@ -11,11 +11,14 @@
     } 
   </style>
     <google-map latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
-      <template repeat="{{x in keys | geofilter}}">
+      <template repeat="{{x in show | geofilter(data)}}">
         <google-map-marker longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}"></google-map-marker>
       </template>
     </google-map>
     <google-map-search map="{{$.google_map.map}}" query="{{location}}" id="google_map_search"></google-map-search>
+    keys:{{keys.length}}
+    filteredKeys:{{filteredKeys.length}}
+    show:{{show.length}}
 </template>
 <script>
   //
@@ -35,6 +38,7 @@
       }
     },
     contains: function(lat, lng) { console.log('contains');
+      debugger;
       var point = new google.maps.LatLng(lat, lng);
       return area.bounds.contains(point);
     },
@@ -45,8 +49,20 @@
   };
   var initialize = true;
   Polymer('map-filter', {
+    publish: {
+      cards: [],
+      location:"Penzance",
+      filteredKeys: [],
+      keys: [],
+      show: []
+    },
+    keysChanged: function(oldValue, newValue) {
+      debugger;
+      this.keysForFilter = newValue;  
+      this.keysForMap = newValue;  
+      //this.cards = newValue;
+    },
     data: null,
-    keys: null,
     filters:{},
     pins:{},
     LatLngTolongitude: function(value) { console.log('LatLngTolongitude');
@@ -66,8 +82,10 @@
         var output=[];
         debugger;
         for(var key in keys) {
-          if (check(data[key].LatLng)) {
-            output.push(key);
+          if (hasOwnProperty(data[key],"LatLng") ) {
+            if (check(data[key].LatLng)) {
+              output.push(key);
+            }
           }
         };
         this.filteredKeys = output;

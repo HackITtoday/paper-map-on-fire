@@ -65,7 +65,7 @@
     urlValuesChanged: function(oldValue, newValue) {
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
-      this.cards = inBoth(newValue,this.facilitiesFilteredKeys);
+      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
       this.cards = this.inBoth(newValue,this.mapFilteredKeys);

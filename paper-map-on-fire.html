@@ -13,11 +13,11 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <div id="filters">
-    <paper-filter-on-fire show="{{pins}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
+    <paper-filter-on-fire show="{{facilitiesFilteredKeys}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter pins="{{pins}}"  show="{{mapFilteredKeys}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter pins="{{pins}}"  show="{{facilitiesFilteredKeys}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
     <paper-cards-on-fire data="{{data}}" keys="{{facilitiesFilteredKeys}}" ></paper-cards-on-fire>
@@ -69,7 +69,7 @@
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
       debugger;
-      this.pins = newValue;
+      this.mapFilteredKeys = newValue;
     },
     ready: function() { console.log('paper ready');
     }

@@ -13,14 +13,14 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <div id="filters">
-    <paper-filter-on-fire show="{{facilitiesFilteredKeys}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
+    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter pins="{{pins}}"  show="{{facilitiesFilteredKeys}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter pins="{{pins}}"  show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
-    <paper-cards-on-fire data="{{data}}" keys="{{facilitiesFilteredKeys}}" ></paper-cards-on-fire>
+    <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
   </div>
 </div>
 </template>
@@ -35,11 +35,12 @@
     },
     inBoth: function(a,b) {
       output =[];
-      if (a === undefined || a.length === 0) {
-        return b;
-      };
-      if (b === undefined || b.length === 0) {
+      if ((a.length === false || a.length === undefined) && (b.length === false || b.length === undefined)) {
+        return [];
+      } else if (b.length === false || b.length === undefined) {
         return a;
+      } else if (a.length === false || a.length === undefined) {
+        return b;
       };
       if (a.length > b.length) {
         for (var x in b) {
@@ -50,26 +51,24 @@
         } else {
         for (var x in a) {
           if (a.indexOf(x)) {
-            output.push(x);
+            output.push(a[x]);
           }
         }
       }
-      debugger;
       return output;
     },
     cards:[],
     keysChanged: function(oldValue, newValue) {
       //this.cards = newValue;
+      this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
     },
     urlValuesChanged: function(oldValue, newValue) {
-      debugger;
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
-      debugger;
+      this.cards = inBoth(newValue,this.facilitiesFilteredKeys);
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
-      debugger;
-      this.mapFilteredKeys = newValue;
+      this.cards = this.inBoth(newValue,this.mapFilteredKeys);
     },
     ready: function() { console.log('paper ready');
     }

@@ -74,9 +74,11 @@
       }
     },
     keysChanged: function(oldValue, newValue) {
-      area.bounds = map.getBounds();
-      this.pins = geofilter(newValue, this.data);  
-      this.filteredKeys = this.pins;
+      if (map.hasOwnProperty('getBounds')) {
+        area.bounds = map.getBounds();
+        this.pins = geofilter(newValue, this.data);  
+        this.filteredKeys = this.pins;
+      }
     },
     data: null,
     filters:{},
@@ -92,29 +94,24 @@
       }
     },
     byCenter: function(keys) { console.log('byCenter');
-      var data = this.data;
-      for (var prop in keys) {
-        array.push(prop)
+      if (keys.length > 0) {
+        var data = this.data;
+        return keys.sort(function (a, b) {
+          var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
+          var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
+          debugger;
+          // get map center
+          LatM = map.center.lat();
+          LngM = map.center.lng();
+          // dis
+          disA = ((+LatM-(+latA))*(+LatM-(+latA)))+((+LngM-(+lngA))*(+LngM-(+lngA)));
+          disB = ((+LatM-(+latB))*(+LatM-(+latB)))+((+LngM-(+lngB))*(+LngM-(+lngB)));
+          // 
+          if (disA < disB) return -1;
+          if (disA > disB) return 1;
+          return 0;
+        });
       }
-      return array.sort(function (a, b) {
-        if (!data.hasOwnProperty(a)) { return 0 }
-        if (!data.hasOwnProperty(b)) { return 0 }
-        if (!data[a].hasOwnProperty("LatLag")) { return 0 }
-        if (!data[b].hasOwnProperty("LatLag")) { return 0 }
-        var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
-        var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
-        debugger;
-        // get map center
-        LatM = map.center.lat();
-        LngM = map.center.lng();
-        // dis
-        disA = ((-LatM+latA)^2)+((-LatM+lngA)^2);
-        disB = ((-LatM+latB)^2)+((-LatM+lngB)^2);
-        // 
-        if (disA < disB) return -1;
-        if (disA > disB) return 1;
-        return 0;
-      });
     },
     geofilter: function(keys,data) { console.log('geofilter');
       if (data !== null && keys !== null && data !== undefined && keys !== undefined) {

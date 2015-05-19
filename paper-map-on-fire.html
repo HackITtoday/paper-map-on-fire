@@ -13,9 +13,7 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <template bind="{{x in urlValues }}">
-  <h1>
-   {{x[1]}}
-  </h1>
+  <h1>{{x[1]}}</h1>
   </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
@@ -30,7 +28,7 @@
 </div>
 </template>
 <script>
-  Polymer("paper-map-on-fire",{
+  Polymer('paper-map-on-fire',{
     publish: {
       cards: {},
       facilitiesFilteredKeys:[], 
@@ -38,15 +36,34 @@
       keys: {},
       urlValues:{} 
     },
-    inBoth: function(a,b) {
-      output =[];
+    inBoth: function(a,b) {console.log('inBoth a'+a+' b'+b )
+      if (a.length == b.length) {
+        return a;
+      }
+      var output=[];
+      if (b === undefined) {
+        if (a === undefined) {
+          return [];
+          } else {
+          return a;
+        }
+      }
+      if (a === undefined) {
+        if (b === undefined) {
+          return [];
+          } else {
+          return b;
+        }
+      }
       if ((a.length === false || a.length === undefined) && (b.length === false || b.length === undefined)) {
         return [];
-      } else if (b.length === false || b.length === undefined) {
+      } 
+      if (b.length === false || b.length === undefined) {
         return a;
-      } else if (a.length === false || a.length === undefined) {
+      } 
+      if (a.length === false || a.length === undefined) {
         return b;
-      };
+      }
       if (a.length > b.length) {
         for (var x in b) {
           if (b.indexOf(x)) {
@@ -54,16 +71,16 @@
           }
         }
         } else {
-        for (var x in a) {
-          if (a.indexOf(x)) {
-            output.push(a[x]);
+        for (var y in a) {
+          if (a.indexOf(y)) {
+            output.push(a[y]);
           }
         }
       }
       return output;
     },
     cards:[],
-    keysChanged: function(oldValue, newValue) {
+    keysChanged: function() {
       //this.cards = newValue;
       this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
     },

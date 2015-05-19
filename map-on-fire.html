@@ -3,23 +3,23 @@
 
 <polymer-element id="mapFilter" name="map-filter" attributes="keys data show pins location filteredKeys">
 <template>
-  <style>
-    :host {
-      position: relative;
-      display: block;
-      height: 100%;
-    } 
-	google-map::shadow h4 {
-		font-family: Roboto, Helvetica, arial, sans-serif;
-		text-decoration: none;
-		font-weight: 300;
-	}
-	google-map::shadow a {
-		text-decoration: none;
-	}
-  </style>
+<style>
+  :host {
+    position: relative;
+    display: block;
+    height: 100%;
+  } 
+  google-map::shadow h4 {
+    font-family: Roboto, Helvetica, arial, sans-serif;
+    text-decoration: none;
+    font-weight: 300;
+  }
+  google-map::shadow a {
+    text-decoration: none;
+  }
+</style>
     <google-map latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
-      <template repeat="{{x in show}}">
+      <template repeat="{{x in show | byCenter }}">
         <google-map-marker longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
           <a href="{{data[x].url}}">
             <h4>{{data[x].value}}</h4>
@@ -60,7 +60,6 @@
   var initialize = true;
   Polymer('map-filter', {
     publish: {
-
       cards: [],
       location:"Penzance",
       filteredKeys: [],
@@ -89,6 +88,28 @@
       if (value !== undefined) {
         return +value.split(',')[0];
       }
+    },
+    byCenter: function(keys,data) { console.log('byCenter');
+      debugger;
+      return Object.keys(keys).sort(function (a, b) {
+        if (!data.hasOwnProperty(a)) { return 0 }
+        if (!data.hasOwnProperty(b)) { return 0 }
+        if (!data[a].hasOwnProperty("LatLag")) { return 0 }
+        if (!data[b].hasOwnProperty("LatLag")) { return 0 }
+        var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
+        var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
+        debugger;
+        // get map center
+        LatM = map.center.lat();
+        LngM = map.center.lng();
+        // dis
+        disA = ((-LatM+latA)^2)+((-LatM+lngA)^2);
+        disB = ((-LatM+latB)^2)+((-LatM+lngB)^2);
+        // 
+        if (disA < disB) return -1;
+        if (disA > disB) return 1;
+        return 0;
+      });
     },
     geofilter: function(keys,data) { console.log('geofilter');
       if (data !== null && keys !== null && data !== undefined && keys !== undefined) {

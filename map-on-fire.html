@@ -20,7 +20,7 @@
 </style>
     <google-map latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
       <template repeat="{{x in show | byCenter }}">
-        <google-map-marker longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
+      <google-map-marker icon="{{data[x].type}}.svg" longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
           <a href="{{data[x].url}}">
             <h4>{{data[x].value}}</h4>
             <img src="https://sdyrcs.cloudimage.io/s/crop/120x120/{{ data[x].image }}">
@@ -99,7 +99,6 @@
         return keys.sort(function (a, b) {
           var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
           var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
-          debugger;
           // get map center
           LatM = map.center.lat();
           LngM = map.center.lng();

@@ -147,7 +147,7 @@
           setTimeout(function(){ 
             var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
             app.setmap();
-          }, 3000);
+          }, 4000);
         }
       }
     },
@@ -159,8 +159,8 @@
           area.bounds = map.getBounds();
           var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
           app.pins = app.geofilter(app.keys, app.data);
-        },1000);
-      }, 3000);
+        },5000);
+      }, 5000);
     }
   });
 </script>

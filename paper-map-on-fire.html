@@ -12,6 +12,11 @@
 
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
+  <template bind="{{x in urlValues }}">
+  <h1>
+   {{x[1]}}
+  </h1>
+  </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
@@ -63,6 +68,9 @@
       this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
     },
     urlValuesChanged: function(oldValue, newValue) {
+      if (this.urlValues) {
+        this.location = this.urlValues[2];
+      }
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
       this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
@@ -71,6 +79,9 @@
       this.cards = this.inBoth(newValue,this.mapFilteredKeys);
     },
     ready: function() { console.log('paper ready');
+      if (this.urlValues) {
+        this.location = this.urlValues[2];
+      }
     }
   });
 </script>

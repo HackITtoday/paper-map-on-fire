@@ -1,7 +1,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 
-<polymer-element id="mapFilter" name="map-filter" attributes="zoom keys data show pins location filteredKeys">
+<polymer-element id="mapFilter" name="map-filter" attributes="zoom keys data show location filteredKeys">
 <template>
 <style>
   :host {
@@ -69,20 +69,17 @@
     showChanged: function(oldValue, newValue) {
       if (map.hasOwnProperty('getBounds')) {
         area.bounds = map.getBounds();
-        this.pins = geofilter(newValue, this.data);  
-        this.filteredKeys = this.pins;
+        this.filteredKeys = geofilter(newValue, this.data);  
       }
     },
     keysChanged: function(oldValue, newValue) {
       if (map.hasOwnProperty('getBounds')) {
         area.bounds = map.getBounds();
-        this.pins = geofilter(newValue, this.data);  
-        this.filteredKeys = this.pins;
+        this.filteredKeys = geofilter(newValue, this.data);  
       }
     },
     data: null,
     filters:{},
-    pins:{},
     LatLngTolongitude: function(value) {
       if (value !== undefined) {
         return +value.split(',')[1];
@@ -97,22 +94,24 @@
       if (keys.length > 0) {
         var data = this.data;
         return keys.sort(function (a, b) {
-          var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
-          var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
-          // get map center
-          LatM = map.center.lat();
-          LngM = map.center.lng();
-          // distance calculated by Pythagoras Theorem
-          disA = ((+LatM-(+latA))*(+LatM-(+latA)))+((+LngM-(+lngA))*(+LngM-(+lngA)));
-          disB = ((+LatM-(+latB))*(+LatM-(+latB)))+((+LngM-(+lngB))*(+LngM-(+lngB)));
-          // 
-          if (disA < disB) return -1;
-          if (disA > disB) return 1;
+          if ( data[a].hasOwnProperty("LatLng") && data[b].hasOwnProperty("LatLng") ) {
+            var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
+            var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
+            // get map center
+            LatM = map.center.lat();
+            LngM = map.center.lng();
+            // distance calculated by Pythagoras Theorem
+            disA = ((+LatM-(+latA))*(+LatM-(+latA)))+((+LngM-(+lngA))*(+LngM-(+lngA)));
+            disB = ((+LatM-(+latB))*(+LatM-(+latB)))+((+LngM-(+lngB))*(+LngM-(+lngB)));
+            // 
+            if (disA < disB) return -1;
+            if (disA > disB) return 1;
+          }
           return 0;
         });
       }
     },
-    geofilter: function(keys,data) { console.log('geofilter');
+    geofilter: function(keys,data) { console.log('geofilter'); console.log(keys);
       if (data !== null && keys !== null && data !== undefined && keys !== undefined) {
         if (initialize) { this.setmap(); }
         var check = area.containsStrLatlng;
@@ -137,7 +136,7 @@
           google.maps.event.addListener(map, 'idle', function() {
             area.bounds = map.getBounds();
             var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-            app.pins = app.geofilter(app.keys, app.data);
+            app.show = app.geofilter(app.keys, app.data);
           });
 
           initialize = false;
@@ -158,7 +157,7 @@
         setTimeout(function(){// load pins 
           area.bounds = map.getBounds();
           var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-          app.pins = app.geofilter(app.keys, app.data);
+          app.show = app.geofilter(app.keys, app.data);
         },5000);
       }, 5000);
     }

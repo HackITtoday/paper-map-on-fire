@@ -13,7 +13,7 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <template bind="{{x in urlValues }}">
-  <h1>{{x[1]}}</h1>
+  <h1>{{x.search}}</h1>
   </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
@@ -37,7 +37,7 @@
       urlValues:{} 
     },
     inBoth: function(a,b) {console.log('inBoth a'+a+' b'+b )
-      if (a.length == b.length) {
+      if (a == b) {
         return a;
       }
       var output=[];
@@ -97,7 +97,7 @@
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {
-        this.location = this.urlValues[2];
+        this.location = this.urlValues.search;
       }
     }
   });

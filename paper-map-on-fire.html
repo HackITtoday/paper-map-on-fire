@@ -30,10 +30,10 @@
 <script>
   Polymer('paper-map-on-fire',{
     publish: {
-      cards: {},
+      cards: [],
       facilitiesFilteredKeys:[], 
-      mapFilteredKeys: {},
-      keys: {},
+      mapFilteredKeys: [],
+      keys: [],
       urlValues:{} 
     },
     inBoth: function(a,b) {console.log('inBoth a: '+ a +' b: '+b );
@@ -48,9 +48,6 @@
       if (a === undefined || !a.hasOwnProperty("length")) {
         return [];
       }
-      if (a.length == b.length) {
-        return a;
-      }
       if ((a.length === false || a.length === undefined) && (b.length === false || b.length === undefined)) {
         return [];
       } 
@@ -63,7 +60,7 @@
       if (a.length > b.length) {
         for (var x in b) {
           if (b.indexOf(x)) {
-            output.push(x);
+            output.push(b[x]);
           }
         }
         } else {
@@ -98,16 +95,10 @@
       }
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
-      if (oldValue && newValue) {
-        debugger;
-        this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
-        debugger;
-      }
+      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
-          debugger;
       this.cards = this.inBoth(newValue,this.mapFilteredKeys);
-          debugger;
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {

@@ -91,10 +91,11 @@
       }
     },
     byCenter: function(keys) { console.log('byCenter');
+//TODO if keys are a subset and the map has not moved do not resort
       if (keys.length > 0) {
         var data = this.data;
         return keys.sort(function (a, b) {
-          if ( data[a].hasOwnProperty("LatLng") && data[b].hasOwnProperty("LatLng") ) {
+          if ( a !== 0 && data[a].hasOwnProperty("LatLng") && data[b].hasOwnProperty("LatLng") ) {
             var latA = data[a].LatLng.split(',')[0], latB = data[b].LatLng.split(',')[0];
             var lngA = data[a].LatLng.split(',')[1], lngB = data[b].LatLng.split(',')[1];
             // get map center
@@ -123,8 +124,6 @@
             }
           }
         };
-       // this.filteredKeys = output;
-      //  this.show = output;
         return output;
       }
     },
@@ -136,7 +135,7 @@
           google.maps.event.addListener(map, 'idle', function() {
             area.bounds = map.getBounds();
             var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-            app.show = app.geofilter(app.keys, app.data);
+            app.filteredKeys = app.geofilter(app.keys, app.data);
           });
 
           initialize = false;
@@ -157,7 +156,7 @@
         setTimeout(function(){// load pins 
           area.bounds = map.getBounds();
           var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-          app.show = app.geofilter(app.keys, app.data);
+          app.filteredKeys = app.geofilter(app.keys, app.data);
         },5000);
       }, 5000);
     }

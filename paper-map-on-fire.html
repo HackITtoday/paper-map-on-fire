@@ -16,7 +16,7 @@
   <h1>{{x.search}}</h1>
   </template>
   <div id="filters">
-    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{pins}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
+    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
 
   </div>
     <div id="map_space" style="height:400px"> 
@@ -36,24 +36,28 @@
       keys: {},
       urlValues:{} 
     },
-    inBoth: function(a,b) {console.log('inBoth a'+a+' b'+b )
+    inBoth: function(a,b) {console.log('inBoth a: '+ a +' b: '+b );
+
       if (a == b) {
         return a;
       }
       var output=[];
-      if (b === undefined) {
-        if (a === undefined) {
+      if (b === undefined || !b.hasOwnProperty("length")) {
+        if (a === undefined || !a.hasOwnProperty("length")) {
           return [];
           } else {
           return a;
         }
       }
-      if (a === undefined) {
-        if (b === undefined) {
+      if (a === undefined || !a.hasOwnProperty("length")) {
+        if (b === undefined || !b.hasOwnProperty("length")) {
           return [];
           } else {
           return b;
         }
+      }
+      if (a.length == b.length) {
+        return a;
       }
       if ((a.length === false || a.length === undefined) && (b.length === false || b.length === undefined)) {
         return [];
@@ -102,10 +106,16 @@
       }
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
-      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
+      if (oldValue && newValue) {
+        debugger;
+        this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
+        debugger;
+      }
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
+          debugger;
       this.cards = this.inBoth(newValue,this.mapFilteredKeys);
+          debugger;
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {

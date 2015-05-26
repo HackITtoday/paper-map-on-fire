@@ -1,7 +1,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 
-<polymer-element id="mapFilter" name="map-filter" attributes="keys data show pins location filteredKeys">
+<polymer-element id="mapFilter" name="map-filter" attributes="zoom keys data show pins location filteredKeys">
 <template>
 <style>
   :host {
@@ -18,7 +18,7 @@
     text-decoration: none;
   }
 </style>
-    <google-map latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
+    <google-map zoom="{{zoom}}" latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
       <template repeat="{{x in show | byCenter }}">
       <google-map-marker icon="{{data[x].type}}.svg" longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
           <a href="{{data[x].url}}">

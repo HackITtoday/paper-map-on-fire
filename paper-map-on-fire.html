@@ -12,7 +12,7 @@
 
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
-  <template bind="{{x in urlValues }}">
+  <template bind="{{x in urlValues}}">
   <h1>{{x.search}}</h1>
   </template>
   <div id="filters">
@@ -20,7 +20,7 @@
 
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter pins="{{pins}}"  show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter pins="{{pins}}" zoom={{zoom}} show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
     <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
@@ -86,7 +86,19 @@
     },
     urlValuesChanged: function(oldValue, newValue) {
       if (this.urlValues) {
-        this.location = this.urlValues[2];
+	if (this.urlValues.hasOwnProperty("search")) {
+	  this.location = this.urlValues.search;
+	}
+      }
+    },
+    zoomChanged: function(oldValue, newValue) {
+      if (oldValue === undefined) {
+        if (newValue == 10) {
+          this.zoom = newValue + 2;
+        } else if (newValue !== 10) {
+          debugger;
+          this.zoom = newValue + 2;
+        }
       }
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
@@ -97,7 +109,9 @@
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {
-        this.location = this.urlValues.search;
+	if (this.urlValues.hasOwnProperty("search")) {
+          this.location = this.urlValues.search;
+	}
       }
     }
   });

@@ -20,7 +20,7 @@
 
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter pins="{{pins}}" zoom={{zoom}} show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter zoom={{zoom}} show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
     <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
@@ -42,19 +42,11 @@
         return a;
       }
       var output=[];
-      if (b === undefined || !b.hasOwnProperty("length")) {
-        if (a === undefined || !a.hasOwnProperty("length")) {
+      if (a === undefined || !a.hasOwnProperty("length")) {
           return [];
-          } else {
-          return a;
-        }
       }
       if (a === undefined || !a.hasOwnProperty("length")) {
-        if (b === undefined || !b.hasOwnProperty("length")) {
-          return [];
-          } else {
-          return b;
-        }
+        return [];
       }
       if (a.length == b.length) {
         return a;
@@ -63,10 +55,10 @@
         return [];
       } 
       if (b.length === false || b.length === undefined) {
-        return a;
+        return [];
       } 
       if (a.length === false || a.length === undefined) {
-        return b;
+        return [];
       }
       if (a.length > b.length) {
         for (var x in b) {

@@ -19,7 +19,7 @@
   }
 </style>
     <google-map zoom="{{zoom}}" latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
-      <template repeat="{{x in filteredKeys | byCenter }}">
+      <template repeat="{{x in show | byCenter }}">
       <google-map-marker icon="{{data[x].type}}.svg" longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
           <a href="{{data[x].url}}">
             <h4>{{data[x].value}}</h4>

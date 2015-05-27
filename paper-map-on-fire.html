@@ -13,7 +13,7 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <template bind="{{x in urlValues}}">
-  <h1>{{x.search}}</h1>
+  <h1>{{x.search | noplus}}</h1>
   </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
@@ -73,6 +73,9 @@
       return output;
     },
     cards:[],
+    noplus: function(v) {
+      return v.replace(/\+/g,' ');
+    },
     keysChanged: function() {
       //this.cards = newValue;
       this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);

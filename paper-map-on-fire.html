@@ -44,32 +44,26 @@
       if (a === undefined || !a.hasOwnProperty("length")) {
           return [];
       }
-      if (a === undefined || !a.hasOwnProperty("length")) {
+      if (b === undefined || !b.hasOwnProperty("length")) {
         return [];
       }
-      if ((a.length === false || a.length === undefined) && (b.length === false || b.length === undefined)) {
+      if (a.length === false || a.length === undefined || b.length === false || b.length === undefined || a.length === 0 || b.length === 0 ) {
         return [];
       } 
-      if (b.length === false || b.length === undefined) {
-        return [];
-      } 
-      if (a.length === false || a.length === undefined) {
-        return [];
-      }
       if (a.length > b.length) {
         for (var x in b) {
-          if (b.indexOf(x)) {
+          if (a.indexOf(b[x]) !== -1) {
             output.push(b[x]);
           }
         }
         } else {
         for (var y in a) {
-          if (a.indexOf(y)) {
+          if (b.indexOf(a[y]) !== -1) {
+// TODO add sort by app
             output.push(a[y]);
           }
         }
       }
-// TODO add sort by app
 
       return output;
     },

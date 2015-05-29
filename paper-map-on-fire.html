@@ -13,7 +13,7 @@
 <firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <template bind="{{x in urlValues}}">
-  <h1>{{x.search | noplus}}</h1>
+    <h1>{{x.search | noplus}}</h1>
   </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
@@ -37,7 +37,6 @@
       urlValues:{} 
     },
     inBoth: function(a,b) {console.log('inBoth a: '+ a +' b: '+b );
-
       if (a == b) {
         return a;
       }
@@ -70,20 +69,27 @@
           }
         }
       }
+// TODO add sort by app
+
       return output;
     },
     cards:[],
     noplus: function(v) {
-      return v.replace(/\+/g,' ');
+      if (typeof v === 'string') {
+        return v.replace(/\+/g,' ');
+      }
     },
     keysChanged: function() {
       //this.cards = newValue;
       this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
     },
     urlValuesChanged: function(oldValue, newValue) {
-      if (this.urlValues) {
-	if (this.urlValues.hasOwnProperty("search")) {
-	  this.location = this.urlValues.search;
+      if (newValue) {
+	if (Array.isArray(newValue)) {
+	  this.location = newValue[2];
+	}
+	if (newValue.hasOwnProperty("search")) {
+	  this.location = newValue.search;
 	}
       }
     },

@@ -1,26 +1,25 @@
 <link rel="import" href="../firebase-element/firebase-element.html">
 <link rel="import" href="../paper-cards-on-fire/paper-cards-on-fire.html">
 <link rel="import" href="../url-value/url-value.html">
+<link rel="import" href="../geohash-js/geohash-js.html">
 <link rel="import" href="../paper-filter-on-fire/paper-filter-on-fire.html">
 <link rel="import" href="map-on-fire.html">
 
-<polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url location">
+<polymer-element id="paperMapOnFire" name="paper-map-on-fire" attributes="url location hashed">
 <template>
 <link rel="stylesheet" href="paper-map-on-fire.css">
 
 <url-value values="{{urlValues}}"></url-value>
-
-<firebase-element location="{{url}}" data="{{data}}" keys="{{keys}}" id="paperMapOnFireBase"></firebase-element>
+    <firebase-element location="{{url}}" data="{{dataH}}" keys="{{keysH}}" id="paperMapOnFireBase"></firebase-element>
 <div>
   <template bind="{{x in urlValues}}">
     <h1>{{x.search | noplus}}</h1>
   </template>
   <div id="filters">
     <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
-
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter zoom={{zoom}} show="{{cards}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter zoom={{zoom}} show="{{cards}}" lat="{{lat}}" lng="{{lng}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
     <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
@@ -28,16 +27,37 @@
 </div>
 </template>
 <script>
+  var flattenObject = function(ob,addToKey) {
+    var toReturn = {};
+    for (var i in ob) {
+      if (!ob.hasOwnProperty(i)) continue;
+
+      if ((typeof ob[i]) == 'object' && !Array.isArray(ob)) {
+        var flatObject = flattenObject(ob[i]);
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+
+          toReturn[i + '' + x] = flatObject[x];
+        }
+        } else {
+        toReturn[addToKey+''+i] = ob[i];
+      }
+    }
+    return toReturn;
+  };
   Polymer('paper-map-on-fire',{
     publish: {
       cards: [],
+      lat: null,
+      lng: null,
       facilitiesFilteredKeys:[], 
       mapFilteredKeys: [],
       keys: [],
-      urlValues:{} 
+      urlValues:{},
+      hash: true
     },
     inBoth: function(a,b) {console.log('inBoth a: '+ a +' b: '+b );
-      if (a == b) {
+      if (a === b) {
         return a;
       }
       var output=[];
@@ -86,6 +106,56 @@
 	  this.location = newValue.search;
 	}
       }
+    },
+    geoHash: function(lng,lat) {
+      return encodeGeoHash(+lng, +lat);
+    },
+    latChanged: function(oldValue, newValue) {
+      // 
+      // load data if all there 
+      // 
+      if (typeof this.dataH === 'object') {
+        if (this.lng !== undefined && this.lng !== null) {
+          if (this.lat !== undefined && this.lat !== null) {
+            this.loadData();
+          }
+        }
+      }
+    },
+    dataHChanged: function(oldValue, newValue) {
+      // 
+      // load data if all there 
+      // 
+      if (typeof newValue === 'object') {
+        if (this.lng !== undefined && this.lng !== null) {
+          if (this.lat !== undefined && this.lat !== null) {
+            this.loadData();
+          }
+        }
+      }
+    },
+    loadData: function () {
+      var mapCenter = this.geoHash(this.lat,this.lng);
+      var keys = mapCenter.match(/.{1,2}/g);
+      var findKeys = function (obj, keys, path) {
+        var key = keys.shift();
+        path = key+''+path;
+        debugger;
+        if (key !== undefined) {
+          if (!obj.hasOwnProperty(key)) {
+            // find next and prevers
+            return obj;
+          } else {
+            if (keys.length === 0) {
+              return obj;
+            }
+          } 
+          return findKeys(obj[key], keys, path)
+        }
+      }
+      
+      this.data = flattenObject(findKeys(this.dataH,keys));
+      this.keys = Object.keys(this.data);
     },
     zoomChanged: function(oldValue, newValue) {
       if (oldValue === undefined) {

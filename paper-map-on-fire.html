@@ -29,15 +29,22 @@
 <script>
   var flattenObject = function(ob,addToKey) {
     var toReturn = {};
+
     for (var i in ob) {
       if (!ob.hasOwnProperty(i)) continue;
 
-      if ((typeof ob[i]) == 'object' && !Array.isArray(ob)) {
-        var flatObject = flattenObject(ob[i]);
+      if ((typeof ob[i]) == 'object' && !Array.isArray(ob[i])) {
+        var flatObject = flattenObject(ob[i],'');
         for (var x in flatObject) {
           if (!flatObject.hasOwnProperty(x)) continue;
 
-          toReturn[i + '' + x] = flatObject[x];
+          toReturn[addToKey+i+x] = flatObject[x];
+        }
+        } else if (Array.isArray(ob[i])) {
+        var flatObject = ob[i];
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+          toReturn[addToKey+i+x] = flatObject[x];
         }
         } else {
         toReturn[addToKey+''+i] = ob[i];
@@ -95,7 +102,7 @@
     },
     keysChanged: function() {
       //this.cards = newValue;
-      this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
+      //this.cards = this.inBoth(this.mapFilteredKeys,this.facilitiesFilteredKeys);
     },
     urlValuesChanged: function(oldValue, newValue) {
       if (newValue) {
@@ -139,22 +146,23 @@
       var keys = mapCenter.match(/.{1,2}/g);
       var findKeys = function (obj, keys, path) {
         var key = keys.shift();
-        path = key+''+path;
-        debugger;
+        path += key+'';
         if (key !== undefined) {
           if (!obj.hasOwnProperty(key)) {
             // find next and prevers
-            return obj;
+            return {obj:obj,path:path.substring(0,path.length - key.length)};
           } else {
             if (keys.length === 0) {
-              return obj;
+              return {obj:obj,path:path.substring(0,path.length - key.length)};
             }
           } 
           return findKeys(obj[key], keys, path)
         }
       }
-      
-      this.data = flattenObject(findKeys(this.dataH,keys));
+      var path = '';
+      debugger;
+      var loaded = findKeys(this.dataH,keys,path);
+      this.data = flattenObject(loaded.obj,loaded.path);
       this.keys = Object.keys(this.data);
     },
     zoomChanged: function(oldValue, newValue) {

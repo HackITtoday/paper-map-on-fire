@@ -18,7 +18,7 @@
     text-decoration: none;
   }
 </style>
-    <google-map zoom="{{zoom}}" latitude="{{$.google_map_search.result.latitude}}" longitude="{{$.google_map_search.result.longitude}}" id="google_map">
+  <google-map zoom="{{zoom}}" latitude="{{lat}}" longitude="{{lng}}" id="google_map">
       <template repeat="{{x in show | byCenter }}">
       <google-map-marker icon="{{data[x].type}}.svg" longitude="{{data[x].LatLng|LatLngTolongitude}}" latitude="{{data[x].LatLng|LatLngTolatitude}}" title="{{data[x].value}}" >
           <a href="{{data[x].url}}">
@@ -28,7 +28,7 @@
         </google-map-marker>
       </template>
     </google-map>
-    <google-map-search map="{{$.google_map.map}}" query="{{location}}" id="google_map_search"></google-map-search>
+    <google-map-search result="{{result}}" map="{{$.google_map.map}}" query="{{location}}" id="google_map_search"></google-map-search>
 </template>
 <script>
   //
@@ -66,18 +66,15 @@
       lat: undefined,
       lng: undefined,
       keys: [],
+      result: {},
       show: []
     },
     showChanged: function(oldValue, newValue) {
-      if (map.hasOwnProperty('getBounds')) {
-        area.bounds = map.getBounds();
-        this.filteredKeys = geofilter(newValue, this.data);  
-      }
     },
     keysChanged: function(oldValue, newValue) {
-      if (map.hasOwnProperty('getBounds')) {
+      if (!initialize) {
         area.bounds = map.getBounds();
-        this.filteredKeys = geofilter(newValue, this.data);  
+        this.filteredKeys = this.geofilter(newValue, this.data);  
       }
     },
     data: null,
@@ -154,7 +151,12 @@
         }
       }
     },
+    resultChanged: function(oldValue,newValue) {
+      this.lat = newValue.latitude;
+      this.lng = newValue.longitude;
+    },
     ready: function() { console.log('map ready');
+
       setTimeout(function(){
         var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
         app.setmap();
@@ -165,7 +167,7 @@
           app.lat = map.center.lat();
           app.lng = map.center.lng();
         },4000);
-      },4000);
+      },1000);
     }
   });
 </script>

@@ -1,7 +1,7 @@
 <link rel="import" href="../google-map/google-map.html">
 <link rel="import" href="../google-map/google-map-search.html">
 
-<polymer-element id="mapFilter" name="map-filter" attributes="zoom lat lng keys data show location filteredKeys">
+<polymer-element id="mapFilter" name="map-filter" attributes="zoom lat lng data show location filteredKeys">
 <template>
 <style>
   :host {
@@ -65,16 +65,14 @@
       filteredKeys: [],
       lat: undefined,
       lng: undefined,
-      keys: [],
+      data: null,
       result: {},
       show: []
     },
-    showChanged: function(oldValue, newValue) {
-    },
-    keysChanged: function(oldValue, newValue) {
+    dataChanged: function(oldValue, newValue) {
       if (!initialize) {
         area.bounds = map.getBounds();
-        this.filteredKeys = this.geofilter(newValue, this.data);  
+        this.filteredKeys = this.geofilter(newValue);  
       }
     },
     data: null,
@@ -108,20 +106,22 @@
             if (disA > disB) return 1;
           }
           return 0;
-        });
-        } else {
+        }).slice(0, 20);
+      } else {
         return keys;
       }
     },
-    geofilter: function(keys,data) { console.log('geofilter'); console.log(keys);
-      if (data !== null && keys !== null && data !== undefined && keys !== undefined) {
+    geofilter: function(data) { console.log('geofilter');
+      if (data !== null && data !== undefined) {
+        keys = Object.keys(data);
+        console.log(keys);
         if (initialize) { this.setmap(); }
         var check = area.containsStrLatlng;
         var output=[];
         for(var key in keys) {
-          if (hasOwnProperty(data[key],"LatLng") ) {
-            if (check(data[key].LatLng)) {
-              output.push(key);
+          if ( data[keys[key]].hasOwnProperty("LatLng") ) {
+            if (check(data[keys[key]].LatLng)) {
+              output.push(keys[key]);
             }
           }
         };
@@ -136,7 +136,7 @@
         google.maps.event.addListener(map, 'idle', function() {
           area.bounds = map.getBounds();
           var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-          app.filteredKeys = app.geofilter(app.keys, app.data);
+          app.filteredKeys = app.geofilter(app.data);
           app.lat = map.center.lat();
           app.lng = map.center.lng();
         });
@@ -154,16 +154,19 @@
     resultChanged: function(oldValue,newValue) {
       this.lat = newValue.latitude;
       this.lng = newValue.longitude;
+      if (!initialize) {
+        area.bounds = map.getBounds();
+        this.filteredKeys = this.geofilter(this.data);  
+      }
     },
     ready: function() { console.log('map ready');
-
       setTimeout(function(){
         var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
         app.setmap();
         setTimeout(function(){// load pins 
           area.bounds = map.getBounds();
           var app = document.querySelectorAll('html /deep/ #mapFilter')[0];
-          app.filteredKeys = app.geofilter(app.keys, app.data);
+          app.filteredKeys = app.geofilter(app.data);
           app.lat = map.center.lat();
           app.lng = map.center.lng();
         },4000);

@@ -17,8 +17,8 @@
   </template>
   <div id="filters">
 
-<!--      <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire> 
--->
+    <paper-filter-on-fire show="{{cards}}" data="{{data}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire> 
+
   </div>
     <div id="map_space" style="height:400px"> 
       <map-filter zoom={{zoom}} show="{{mapFilteredKeys}}" lat="{{lat}}" lng="{{lng}}" location="{{location}}" data="{{data}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
@@ -206,11 +206,11 @@
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
 //      debugger;
-//      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
+      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
 //      debugger;
-//      this.cards = this.inBoth(newValue,this.mapFilteredKeys);
+      this.cards = this.inBoth(newValue,this.mapFilteredKeys);
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {

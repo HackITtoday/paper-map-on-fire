@@ -16,38 +16,42 @@
     <h1>{{x.search | noplus}}</h1>
   </template>
   <div id="filters">
-    <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire>
+
+<!--      <paper-filter-on-fire show="{{cards}}" data="{{data}}" keys="{{keys}}" filters="{{filters}}" by="facilities" filteredKeys="{{facilitiesFilteredKeys}}"></paper-filter-on-fire> 
+-->
   </div>
     <div id="map_space" style="height:400px"> 
-      <map-filter zoom={{zoom}} show="{{cards}}" lat="{{lat}}" lng="{{lng}}" location="{{location}}" data="{{data}}" keys="{{keys}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
+      <map-filter zoom={{zoom}} show="{{mapFilteredKeys}}" lat="{{lat}}" lng="{{lng}}" location="{{location}}" data="{{data}}" filteredKeys="{{mapFilteredKeys}}"></map-filter>
   </div> 
   <div id="cards">
-    <paper-cards-on-fire data="{{data}}" keys="{{cards}}" ></paper-cards-on-fire>
+    <paper-cards-on-fire data="{{data}}" keys="{{mapFilteredKeys}}" ></paper-cards-on-fire>
   </div>
 </div>
 </template>
 <script>
-  var flattenObject = function(ob,addToKey) {
+  var flattenObject = function(ob,addToKey,add) {
     var toReturn = {};
 
     for (var i in ob) {
       if (!ob.hasOwnProperty(i)) continue;
 
-      if ((typeof ob[i]) == 'object' && !Array.isArray(ob[i])) {
-        var flatObject = flattenObject(ob[i],'');
-        for (var x in flatObject) {
-          if (!flatObject.hasOwnProperty(x)) continue;
-
-          toReturn[addToKey+i+x] = flatObject[x];
-        }
-        } else if (Array.isArray(ob[i])) {
-        var flatObject = ob[i];
-        for (var x in flatObject) {
-          if (!flatObject.hasOwnProperty(x)) continue;
-          toReturn[addToKey+i+x] = flatObject[x];
-        }
+      if ((typeof ob[i]) == 'object') {
+        if (Array.isArray(ob[i])) {
+          var flatObject = ob[i];
         } else {
-        toReturn[addToKey+''+i] = ob[i];
+          var flatObject = flattenObject(ob[i],'',{});
+        }
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+          toReturn[addToKey+i+x] = flatObject[x];
+        }
+        for (var x in add) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+          toReturn[addToKey+i+x] = flatObject[x];
+        }
+
+      } else {
+        toReturn[addToKey+i] = ob[i];
       }
     }
     return toReturn;
@@ -133,7 +137,7 @@
       // 
       // load data if all there 
       // 
-      if (typeof newValue === 'object') {
+      if (typeof this.dataH === 'object') {
         if (this.lng !== undefined && this.lng !== null) {
           if (this.lat !== undefined && this.lat !== null) {
             this.loadData();
@@ -143,11 +147,22 @@
     },
     loadData: function () {
       var mapCenter = this.geoHash(this.lat,this.lng);
+      var mapNeighbors = [];
+
+      mapNeighbors.push(calculateAdjacent(mapCenter.substring(0,4),'top'));
+      mapNeighbors.push(calculateAdjacent(mapCenter.substring(0,4),'bottom'));
+      mapNeighbors.push(calculateAdjacent(mapCenter.substring(0,4),'right'));
+      mapNeighbors.push(calculateAdjacent(mapCenter.substring(0,4),'left'));
+      mapNeighbors.push(calculateAdjacent(mapNeighbors[3],'top'));
+      mapNeighbors.push(calculateAdjacent(mapNeighbors[2],'top'));
+      mapNeighbors.push(calculateAdjacent(mapNeighbors[3],'bottom'));
+      mapNeighbors.push(calculateAdjacent(mapNeighbors[2],'bottom'));
+
       var keys = mapCenter.match(/.{1,2}/g);
       var findKeys = function (obj, keys, path) {
         var key = keys.shift();
         path += key+'';
-        if (key !== undefined) {
+        if (key !== undefined && obj !== null) {
           if (!obj.hasOwnProperty(key)) {
             // find next and prevers
             return {obj:obj,path:path.substring(0,path.length - key.length)};
@@ -160,10 +175,24 @@
         }
       }
       var path = '';
-      debugger;
       var loaded = findKeys(this.dataH,keys,path);
-      this.data = flattenObject(loaded.obj,loaded.path);
+      this.data = flattenObject(loaded.obj, loaded.path, this.data);
       this.keys = Object.keys(this.data);
+
+      //set in timeout
+      this.loadedNeighbors = [];
+      for (var x in mapNeighbors) {
+        this.loadedNeighbors.push( findKeys(this.dataH,mapNeighbors[x].match(/.{1,2}/g),path));
+      } 
+      
+      setTimeout(function(){ 
+        var app = document.querySelectorAll('html /deep/ #paperMapOnFire')[0];
+        for (var x in app.loadedNeighbors) {
+          app.data = flattenObject(app.loadedNeighbors[x].obj, app.loadedNeighbors[x].path, app.data);
+          app.keys = Object.keys(app.data);
+        }
+      },4000);
+
     },
     zoomChanged: function(oldValue, newValue) {
       if (oldValue === undefined) {
@@ -176,10 +205,12 @@
       }
     },
     mapFilteredKeysChanged: function(oldValue, newValue) {
-      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
+//      debugger;
+//      this.cards = this.inBoth(newValue,this.facilitiesFilteredKeys);
     },
     facilitiesFilteredKeysChanged: function(oldValue, newValue) {
-      this.cards = this.inBoth(newValue,this.mapFilteredKeys);
+//      debugger;
+//      this.cards = this.inBoth(newValue,this.mapFilteredKeys);
     },
     ready: function() { console.log('paper ready');
       if (this.urlValues) {
